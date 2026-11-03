@@ -1,0 +1,87 @@
+package com.player.music.ui.components
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import com.player.music.R
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.player.music.ui.theme.Color
+import com.player.music.ui.theme.Dimens
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AccountLogin(
+    onAccountChange: (String) -> Unit = {},
+    onPasswordChange: (String) -> Unit = {}
+) {
+    var account by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    // 监听输入变化
+    LaunchedEffect(account) {
+        onAccountChange(account)
+    }
+
+    LaunchedEffect(password) {
+        onPasswordChange(password)
+    }
+
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.middleGap)
+    ) {
+        // 账号输入框
+        OutlinedTextField(
+            value = account,
+            onValueChange = { account = it },
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.icon_user),
+                    contentDescription = "账号",
+                    modifier = Modifier.width(Dimens.smallIconSize).height(Dimens.smallIconSize)
+                )
+            },
+            placeholder = {
+                Text(text = "请输入账号")
+            },
+            shape = RoundedCornerShape(Dimens.bigBorderRadius),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.DisableColor,
+                unfocusedBorderColor = Color.DisableColor
+            ),
+            singleLine = true
+        )
+
+        // 密码输入框
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.icon_password),
+                    contentDescription = "密码",
+                    modifier = Modifier.width(Dimens.smallIconSize).height(Dimens.smallIconSize)
+                )
+            },
+            placeholder = {
+                Text(text = "请输入密码")
+            },
+            shape = RoundedCornerShape(Dimens.bigBorderRadius),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.DisableColor,
+                unfocusedBorderColor = Color.DisableColor
+            ),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            singleLine = true
+        )
+    }
+}

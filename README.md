@@ -1,0 +1,172 @@
+开发者：吴怨吴悔
+
+=============================界面预览（如果无法预览，请查看项目根目录png文件）==========================  
+![整体预览图](整体预览图.png)
+![音乐首页](音乐首页.png)
+![音乐推荐](音乐推荐.jpg)
+![音乐朋友圈1](音乐朋友圈1.jpg)
+![音乐朋友圈2](音乐朋友圈2.png)
+![音乐我的1](音乐我的1.jpg)
+![音乐我的2](音乐我的2.png)
+![音乐播放页](音乐播放页.jpg)
+![音乐歌词页](音乐歌词页.png)
+![音乐歌手页](音乐歌手页.jpg)
+![音乐搜索列表](音乐搜索列表.png)
+![音乐点赞和评论](音乐点赞和评论.png)
+![音乐圈评论](音乐圈评论.png)
+![音乐收藏列表](音乐收藏列表.png)
+![音乐歌手页](音乐歌手页.png)
+![音乐歌手专辑页](音乐歌手专辑页.png)
+![分类歌曲](分类歌曲.png)
+![账号密码登录](账号密码登录.png)
+![邮箱验证码登录](邮箱验证码登录.png)
+![用户信息](用户信息.png)
+![更改用户信息1](更改用户信息1.png)
+![更改用户信息2](更改用户信息2.png)
+![更改用户信息3](更改用户信息3.png)
+![更改用户信息4](更改用户信息4.png)
+![忘记密码](忘记密码.png)
+![修改密码](修改密码.png)
+![修改用户信息](修改用户信息.png)
+![重置密码](重置密码.png)
+![重置密码](修改密码页面.png)
+![重置密码](找回密码页面.png)
+![重置密码](注册页面.png)
+![重置密码](音乐播放器-收藏页.png)
+![重置密码](音乐播放器-评论页面.png)
+![ai智能聊天助手](ai智能聊天助手.png)
+![ai聊天RAG文档查询](ai聊天RAG文档查询.png)
+![ai聊天菜单功能](ai聊天菜单功能.png)
+![ai聊天会话记录](ai聊天会话记录.png)
+![ai聊天切换模型](ai聊天切换模型.png)
+![ai聊天我的文档](ai聊天我的文档.png)
+=============================界面预览（如果无法预览，请查看项目根目录png文件）==========================  
+
+使用 **Kotlin + Jetpack Compose + Hilt + Retrofit + DataStore** 搭建的音乐 App（Android 原生），
+界面与交互完全对齐 Flutter 版本（flutter-music-app-ui），同一个后端接口。
+
+后端接口使用 FastAPI 开发（gateway 统一网关），所有音乐数据来自于 python 爬虫程序，爬取第三方音乐网站数据。
+接口文档：/docs/api 目录（gateway.md、user.md、music.md、social.md、circle.md、agent.md 等）。
+
+## 一、当前进度
+
+| 模块 | 状态 | 说明 |
+|------|------|------|
+| 启动页 LaunchPage | ✅ 已完成 | logo + 欢迎使用，本地 token 校验后自动登录 |
+| 登录 LoginPage | ✅ 已完成 | 账号密码登录 / 邮箱验证码登录，登录成功进入首页 |
+| 注册 RegisterPage | ✅ 已完成 | 账号、用户名、密码、邮箱、电话、性别、生日、地区、签名，注册成功进入首页 |
+| 忘记密码 ForgetPasswordPage | ✅ 已完成 | 邮箱发送验证码 |
+| 重置密码 ResetPasswordPage | ✅ 已完成 | 邮箱验证码 + 新密码 |
+| 修改密码 UpdatePasswordPage | ✅ 已完成 | 旧密码 + 新密码 |
+| 用户信息 UserPage | ✅ 已完成 | 头像上传、昵称/电话/邮箱/性别/生日/地区/签名修改、退出登录 |
+| 首页 HomePage | 🚧 占位 | 当前仅显示 Hello World，音乐业务页面后续按需接入 |
+
+> 用户模块接口与后端 user-service 完全一致，可直接复用。
+> 测试账号：吴时吴刻 / 123456
+
+## 二、技术栈
+
+- 语言：Kotlin 1.9.23
+- UI：Jetpack Compose（Material3，Compose BOM 2023.10.01）
+- 架构：MVVM + Repository
+- 依赖注入：Hilt 2.51 + KAPT
+- 网络：Retrofit 2.11 + OkHttp 4.12 + Gson
+- 本地存储：DataStore Preferences
+- 导航：Navigation Compose 2.7.7
+- 图片加载：Coil 2.5
+- 构建：AGP 8.5.0 / Gradle 8.13 / JDK 17+
+
+## 三、目录结构
+
+```
+Music/
+├── app/src/main/java/com/player/music/
+│   ├── MainActivity.kt              # 入口 Activity（@AndroidEntryPoint）
+│   ├── MusicApplication.kt          # Application（@HiltAndroidApp）
+│   ├── config/Config.kt             # 后端 BASE_URL 配置
+│   ├── di/AppModule.kt              # Hilt 模块 + 网络日志拦截器
+│   ├── local/                       # DataStore（token / 用户信息 / 登录状态）
+│   ├── model/                       # 数据模型（ApiResponse、User 等）
+│   ├── navigation/                  # Screens 路由表 + NavGraph
+│   ├── network/                     # ApiService（所有接口）、NetworkInterceptor
+│   ├── repository/                  # 请求后端（UserRepository）
+│   ├── utils/                       # 工具方法（MD5、时间格式化等）
+│   ├── viewmodel/                   # 所有 ViewModel
+│   └── ui/
+│       ├── page/                    # 完整页面（Launch/Login/Register/Home/User...）
+│       ├── components/              # 可复用组件（AccountLogin/EmailLogin/Avatar/InputDialog...）
+│       └── theme/                   # Color / Dimens / Theme / Type
+├── app/src/main/res/
+│   ├── drawable/                    # icon_logo.png 等图标资源
+│   └── values/                      # strings、themes、colors
+├── 提示词.md                        # AI 生成代码的规范提示词
+└── README.md
+```
+
+## 四、运行说明
+
+1. 用 Android Studio 打开本项目根目录（Gradle 同步会自动完成）。
+2. 修改后端地址：`app/src/main/java/com/player/music/config/Config.kt`
+   ```kotlin
+   object Config {
+       const val BASE_URL = "http://192.168.234.154:4000"
+   }
+   ```
+   默认与 Flutter 版本一致（gateway 端口 4000）。
+3. 运行到模拟器/真机：`./gradlew :app:assembleDebug` 或直接在 Android Studio 点运行。
+4. 登录测试账号：`吴时吴刻 / 123456`。
+
+## 五、相关项目
+
+flutter音乐项目参见:  
+github地址：https://github.com/wuyuanwuhui99/flutter-music-app-ui  
+gitee地址：https://gitee.com/wuyuanwuhui99/flutter-music-app-ui
+
+android jetpack compose 音乐项目（本项目）:  
+github地址：https://github.com/wuyuanwuhui999/sandriod-jetpack-compose-music-app  
+gitee地址：https://gitee.com/wuyuanwuhui99/andriod-jetpack-compose-music-app
+
+android jetpack compose 聊天项目参见:  
+github地址：https://github.com/wuyuanwuhui999/andriod-jetpack-compose-chat-app  
+gitee地址：https://gitee.com/wuyuanwuhui99/andriod-jetpack-compose-chat-app
+
+后端接口项目（FastAPI 多模块微服务）：  
+接口文档见后端项目 `docs/api/` 目录
+
+## 六、接口说明
+
+所有请求统一走网关（4000 端口），路径格式 `/service/{模块名}/...`：
+
+| 模块 | 路径前缀 | 文档 |
+|------|----------|------|
+| 用户 | /service/user | user.md |
+| 音乐 | /service/music | music.md |
+| 社交（评论/点赞） | /service/social | social.md |
+| 朋友圈 | /service/circle | circle.md |
+| 智能体 | /service/agent | agent.md |
+| 聊天/文档 | /service/chat | chat.md |
+
+统一返回格式：
+
+```json
+{
+  "data": {},
+  "status": "SUCCESS",
+  "msg": null,
+  "total": null,
+  "token": "eyJhbG..."
+}
+```
+
+除登录、注册、找回密码等白名单接口外，其余请求头需携带 `Authorization: Bearer <token>`（由 NetworkInterceptor 自动添加）。
+
+## 七、调试提示
+
+接口和数据请在本地电脑中，暂时没有购买和部署服务器，仅限本地调试，如有需要调试请联系本人启动外网映射。
+
+如需了解是否已开机，请用浏览器直接打开该地址，如出现以下提示，则正常使用：
+![外网映射正常访问提示](外网映射正常访问提示.png)
+
+本站所有音乐和图片均来自互联网收集而来，版权归原创者所有，本网站只提供web页面服务，并不提供资源存储，也不参与录制、上传 若本站收录的节目无意侵犯了贵司版权，请联系
+
+联系方式：（微信）wuwenqiang_99、（邮箱）275018723@qq.com

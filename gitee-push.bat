@@ -1,0 +1,1 @@
+git remote rm origin; git remote add origin https://gitee.com/wuyuanwuhui99/andriod-jetpack-compose-music-app.git; git push -u origin main
