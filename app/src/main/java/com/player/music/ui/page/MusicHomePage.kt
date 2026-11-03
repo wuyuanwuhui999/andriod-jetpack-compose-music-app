@@ -123,7 +123,7 @@ fun MusicHomePage(
                     )
                 }
 
-                // 上拉加载更多
+                // 上拉加载更多（滚动到底部时自动追加下一个分类，与 Flutter 端 EasyRefresh 行为一致）
                 item(key = "load_more") {
                     LoadMoreFooter(
                         hasMore = viewModel.hasMoreCategories(),
@@ -453,6 +453,10 @@ private fun LoadingRow() {
  */
 @Composable
 private fun LoadMoreFooter(hasMore: Boolean, onClick: () -> Unit) {
+    // 底部条目进入可见区域即自动加载下一个分类（相当于 Flutter 的上拉加载）
+    LaunchedEffect(hasMore) {
+        if (hasMore) onClick()
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
