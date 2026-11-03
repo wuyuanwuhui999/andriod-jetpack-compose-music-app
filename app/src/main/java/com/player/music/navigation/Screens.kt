@@ -6,7 +6,7 @@ package com.player.music.navigation
 sealed class Screens(val route: String) {
     object Launch : Screens("launch")
     object Login : Screens("login")
-    object Home : Screens("home")
+    object MusicIndex : Screens("music_index")
     object User : Screens("user")
     object UpdatePassword : Screens("update_password")
     object ForgetPassword : Screens("forget_password")

@@ -46,7 +46,7 @@ fun LaunchPage(
         // 2. 有 token 则调用接口校验有效性
         try {
             val isValid = mainViewModel.validateToken()
-            val target = if (isValid) Screens.Home.route else Screens.Login.route
+            val target = if (isValid) Screens.MusicIndex.route else Screens.Login.route
             navController.navigate(target) {
                 popUpTo(Screens.Launch.route) { inclusive = true }
             }

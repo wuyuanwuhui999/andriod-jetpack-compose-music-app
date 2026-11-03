@@ -3,6 +3,7 @@ package com.player.music.utils
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.player.music.config.Config
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -99,6 +100,16 @@ object CommonUtils {
         }
         // 部分 ContentProvider 不返回 DISPLAY_NAME，退化为从 Uri 路径截取
         return fileName.ifBlank { uri.lastPathSegment?.substringAfterLast('/') ?: "unknown" }
+    }
+
+    /**
+     * 拼接图片完整地址：已是 http 开头的直接返回，否则拼接 BASE_URL
+     * @param path 服务端返回的相对路径，如 /static/music/images/x.jpg
+     * @return 可直接加载的完整 URL，入参为空时返回 null
+     */
+    fun formatImageUrl(path: String?): String? {
+        if (path.isNullOrBlank()) return null
+        return if (path.startsWith("http")) path else Config.BASE_URL + path
     }
 
     /**

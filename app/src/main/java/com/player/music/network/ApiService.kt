@@ -3,6 +3,9 @@ package com.player.music.network
 import com.player.music.model.AccountLoginRequest
 import com.player.music.model.ApiResponse
 import com.player.music.model.EmailLoginRequest
+import com.player.music.model.Music
+import com.player.music.model.MusicAuthor
+import com.player.music.model.MusicCategory
 import com.player.music.model.ResetPasswordRequest
 import com.player.music.model.SendEmailRequest
 import com.player.music.model.UpdatePasswordRequest
@@ -16,6 +19,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Query
 
 /**
  * 所有后端接口统一放在此文件中
@@ -63,4 +67,42 @@ interface ApiService {
     @POST("/service/user/updateAvater")
     @Multipart
     suspend fun updateAvatar(@Part file: MultipartBody.Part): Response<ApiResponse<String>>
+
+    // ==================== 音乐模块 /service/music ====================
+
+    /**
+     * 搜索框推荐音乐（热门歌曲，含当前用户点赞状态）
+     */
+    @GET("/service/music/getKeywordMusic")
+    suspend fun getKeywordMusic(): Response<ApiResponse<Music>>
+
+    /**
+     * 音乐分类（全部榜单分类）
+     */
+    @GET("/service/music/getMusicCategory")
+    suspend fun getMusicCategory(): Response<ApiResponse<List<MusicCategory>>>
+
+    /**
+     * 按分类取音乐列表
+     * @param categoryId 分类ID
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     */
+    @GET("/service/music/getMusicListByCategoryId")
+    suspend fun getMusicListByCategoryId(
+        @Query("categoryId") categoryId: Int,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<ApiResponse<List<Music>>>
+
+    /**
+     * 按分类取歌手列表
+     * @param categoryId 分类ID（0 表示推荐歌手）
+     */
+    @GET("/service/music/getMusicAuthorListByCategoryId")
+    suspend fun getMusicAuthorListByCategoryId(
+        @Query("categoryId") categoryId: Int,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 5
+    ): Response<ApiResponse<List<MusicAuthor>>>
 }

@@ -59,7 +59,11 @@
 | 重置密码 ResetPasswordPage | ✅ 已完成 | 邮箱验证码 + 新密码 |
 | 修改密码 UpdatePasswordPage | ✅ 已完成 | 旧密码 + 新密码 |
 | 用户信息 UserPage | ✅ 已完成 | 头像上传、昵称/电话/邮箱/性别/生日/地区/签名修改、退出登录 |
-| 首页 HomePage | 🚧 占位 | 当前仅显示 Hello World，音乐业务页面后续按需接入 |
+| 音乐主页 MusicIndexPage | ✅ 已完成 | 底部四 Tab（首页/推荐/音乐圈/我的）+ 中间悬浮迷你播放器 |
+| 首页 Tab MusicHomePage | ✅ 已完成 | 搜索栏（头像 + 推荐关键字 + AI 入口）、四个快捷入口、分类歌曲/推荐歌手模块、上拉加载更多 |
+| 推荐 / 音乐圈 Tab | 🚧 占位 | 页面框架已留好，功能待开发 |
+| 我的 Tab | 🚧 占位 | 头像 + 昵称 + 用户信息入口，完整我的页面待开发 |
+| 音乐播放器 | ⬜ 待开发 | 播放/歌词/评论等 |
 
 > 用户模块接口与后端 user-service 完全一致，可直接复用。
 > 测试账号：吴时吴刻 / 123456
@@ -86,15 +90,15 @@ Music/
 │   ├── config/Config.kt             # 后端 BASE_URL 配置
 │   ├── di/AppModule.kt              # Hilt 模块 + 网络日志拦截器
 │   ├── local/                       # DataStore（token / 用户信息 / 登录状态）
-│   ├── model/                       # 数据模型（ApiResponse、User 等）
+│   ├── model/                       # 数据模型（ApiResponse、User、Music、MusicCategory、MusicAuthor）
 │   ├── navigation/                  # Screens 路由表 + NavGraph
 │   ├── network/                     # ApiService（所有接口）、NetworkInterceptor
-│   ├── repository/                  # 请求后端（UserRepository）
+│   ├── repository/                  # 请求后端（UserRepository、MusicRepository）
 │   ├── utils/                       # 工具方法（MD5、时间格式化等）
 │   ├── viewmodel/                   # 所有 ViewModel
 │   └── ui/
-│       ├── page/                    # 完整页面（Launch/Login/Register/Home/User...）
-│       ├── components/              # 可复用组件（AccountLogin/EmailLogin/Avatar/InputDialog...）
+│       ├── page/                    # 完整页面（Launch/Login/Register/MusicIndex/MusicHome/User...）
+│       ├── components/              # 可复用组件（AccountLogin/EmailLogin/Avatar/MusicCover/InputDialog...）
 │       └── theme/                   # Color / Dimens / Theme / Type
 ├── app/src/main/res/
 │   ├── drawable/                    # icon_logo.png 等图标资源

@@ -33,6 +33,11 @@ object Dimens {
     val btnHeight = 50.dp
     val barHeight = 60.dp
     val textareaHeight = 200.dp
+    val bottomBarHeight = 70.dp
+
+    // 首页列表图标 / 迷你播放器
+    val listIconSize = 20.dp
+    val miniPlayerSize = 76.dp
 
     // Font Sizes
     val normalFontSize = 14.sp

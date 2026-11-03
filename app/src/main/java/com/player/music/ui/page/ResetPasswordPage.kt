@@ -336,7 +336,7 @@ fun ResetPasswordPage(
                                 Toast.LENGTH_SHORT
                             ).show()
                             // 重置成功，进入首页
-                            navController.navigate(Screens.Home.route) {
+                            navController.navigate(Screens.MusicIndex.route) {
                                 popUpTo(0) { inclusive = true }
                             }
                         } else {

@@ -7,9 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.player.music.ui.page.ForgetPasswordPage
-import com.player.music.ui.page.HomePage
 import com.player.music.ui.page.LaunchPage
 import com.player.music.ui.page.LoginPage
+import com.player.music.ui.page.MusicIndexPage
 import com.player.music.ui.page.RegisterPage
 import com.player.music.ui.page.ResetPasswordPage
 import com.player.music.ui.page.UpdatePasswordPage
@@ -30,8 +30,8 @@ fun AppNavGraph(navController: NavHostController) {
         composable(Screens.Login.route) {
             LoginPage(navController = navController)
         }
-        composable(Screens.Home.route) {
-            HomePage(navController = navController)
+        composable(Screens.MusicIndex.route) {
+            MusicIndexPage(navController = navController)
         }
         composable(Screens.User.route) {
             UserPage(navController = navController)

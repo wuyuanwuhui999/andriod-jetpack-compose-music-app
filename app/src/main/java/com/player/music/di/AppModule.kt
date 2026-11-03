@@ -6,6 +6,7 @@ import com.player.music.config.Config
 import com.player.music.local.DataStoreManager
 import com.player.music.network.ApiService
 import com.player.music.network.NetworkInterceptor
+import com.player.music.repository.MusicRepository
 import com.player.music.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -66,6 +67,12 @@ object AppModule {
     @Singleton
     fun provideNetworkInterceptor(dataStoreManager: DataStoreManager): NetworkInterceptor {
         return NetworkInterceptor(dataStoreManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMusicRepository(apiService: ApiService): MusicRepository {
+        return MusicRepository(apiService)
     }
 
     @Provides

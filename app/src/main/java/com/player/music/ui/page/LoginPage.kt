@@ -42,7 +42,7 @@ fun LoginPage(
             when (state) {
                 is LoginState.Success -> {
                     // 登录成功，跳转到公司选择页面
-                    navController.navigate(Screens.Home.route) {
+                    navController.navigate(Screens.MusicIndex.route) {
                         // 清空返回栈，防止返回登录页
                         popUpTo(Screens.Login.route) { inclusive = true }
                     }
