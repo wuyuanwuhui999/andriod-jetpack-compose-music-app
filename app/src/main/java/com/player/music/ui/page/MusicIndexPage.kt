@@ -72,8 +72,9 @@ fun MusicIndexPage(
     val toastMessage by viewModel.toastMessage.collectAsState()
 
     var currentIndex by rememberSaveable { mutableIntStateOf(0) }
-    // 首页列表滚动状态提升到这里，切换 Tab 后返回仍保留位置
+    // 列表滚动状态提升到这里，切换 Tab 后返回仍保留位置
     val homeListState = rememberLazyListState()
+    val recommendListState = rememberLazyListState()
 
     // 统一 Toast 提示
     LaunchedEffect(toastMessage) {
@@ -114,10 +115,7 @@ fun MusicIndexPage(
                     currentUserAvatar = currentUser?.avatar,
                     listState = homeListState
                 )
-                1 -> PlaceholderTab(
-                    title = "推荐",
-                    iconRes = R.drawable.icon_recomment
-                )
+                1 -> MusicRecommendPage(listState = recommendListState)
                 2 -> PlaceholderTab(
                     title = "音乐圈",
                     iconRes = R.drawable.icon_music_circle

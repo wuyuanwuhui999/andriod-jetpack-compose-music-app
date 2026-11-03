@@ -3,6 +3,7 @@ package com.player.music.repository
 import com.player.music.model.Music
 import com.player.music.model.MusicAuthor
 import com.player.music.model.MusicCategory
+import com.player.music.model.MusicListResult
 import com.player.music.network.ApiService
 import javax.inject.Inject
 
@@ -62,6 +63,70 @@ class MusicRepository @Inject constructor(
                 Result.success(body.data ?: emptyList())
             } else {
                 Result.failure(Exception(body?.msg ?: "获取分类音乐失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 按分类分页获取音乐列表（同时返回总条数，供推荐页判断是否还有更多）
+     */
+    suspend fun getMusicPageByCategoryId(
+        categoryId: Int,
+        pageNum: Int = 1,
+        pageSize: Int = 10
+    ): Result<MusicListResult> {
+        return try {
+            val response = apiService.getMusicListByCategoryId(categoryId, pageNum, pageSize)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(
+                    MusicListResult(
+                        list = body.data ?: emptyList(),
+                        total = body.total ?: 0
+                    )
+                )
+            } else {
+                Result.failure(Exception(body?.msg ?: "获取分类音乐失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 点赞音乐
+     * @param musicId 音乐ID
+     * @return 影响行数，>0 表示成功
+     */
+    suspend fun likeMusic(musicId: Long): Result<Int> {
+        return try {
+            val response = apiService.insertMusicLike(musicId)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data ?: 0)
+            } else {
+                Result.failure(Exception(body?.msg ?: "点赞失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 取消点赞音乐
+     * @param musicId 音乐ID
+     * @return 影响行数，>0 表示成功
+     */
+    suspend fun unlikeMusic(musicId: Long): Result<Int> {
+        return try {
+            val response = apiService.deleteMusicLike(musicId)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data ?: 0)
+            } else {
+                Result.failure(Exception(body?.msg ?: "取消点赞失败"))
             }
         } catch (e: Exception) {
             Result.failure(e)

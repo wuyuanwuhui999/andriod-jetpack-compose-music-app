@@ -14,11 +14,13 @@ import com.player.music.model.VerifyUserRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -105,4 +107,18 @@ interface ApiService {
         @Query("pageNum") pageNum: Int = 1,
         @Query("pageSize") pageSize: Int = 5
     ): Response<ApiResponse<List<MusicAuthor>>>
+
+    /**
+     * 点赞音乐
+     * @param id 音乐ID
+     */
+    @POST("/service/music/insertMusicLike/{id}")
+    suspend fun insertMusicLike(@Path("id") id: Long): Response<ApiResponse<Int>>
+
+    /**
+     * 取消点赞音乐
+     * @param id 音乐ID
+     */
+    @DELETE("/service/music/deleteMusicLike/{id}")
+    suspend fun deleteMusicLike(@Path("id") id: Long): Response<ApiResponse<Int>>
 }
