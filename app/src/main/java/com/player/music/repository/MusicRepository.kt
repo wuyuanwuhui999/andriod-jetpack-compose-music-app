@@ -2,6 +2,8 @@ package com.player.music.repository
 
 import com.player.music.model.Music
 import com.player.music.model.MusicAuthor
+import com.player.music.model.CreateFavoriteDirectoryRequest
+import com.player.music.model.FavoriteDirectory
 import com.player.music.model.MusicCategory
 import com.player.music.model.MusicListResult
 import com.player.music.network.ApiService
@@ -153,4 +155,129 @@ class MusicRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    /**
+     * 我喜欢的歌曲（分页，带总数）
+     */
+    suspend fun getMusicLike(pageNum: Int = 1, pageSize: Int = 5): Result<MusicListResult> {
+        return try {
+            val response = apiService.getMusicLike(pageNum, pageSize)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(
+                    MusicListResult(list = body.data ?: emptyList(), total = body.total ?: 0)
+                )
+            } else {
+                Result.failure(Exception(body?.msg ?: "获取喜欢的歌曲失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 播放记录（分页，带总数，列表项含 times 播放次数）
+     */
+    suspend fun getMusicRecord(pageNum: Int = 1, pageSize: Int = 10): Result<MusicListResult> {
+        return try {
+            val response = apiService.getMusicRecord(pageNum, pageSize)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(
+                    MusicListResult(list = body.data ?: emptyList(), total = body.total ?: 0)
+                )
+            } else {
+                Result.failure(Exception(body?.msg ?: "获取播放记录失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 我关注的歌手（后端不分页，总数取列表长度）
+     */
+    suspend fun getFavoriteAuthors(): Result<List<MusicAuthor>> {
+        return try {
+            val response = apiService.getFavoriteAuthor()
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data ?: emptyList())
+            } else {
+                Result.failure(Exception(body?.msg ?: "获取关注的歌手失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 取消关注歌手
+     */
+    suspend fun deleteFavoriteAuthor(authorId: Long): Result<Int> {
+        return try {
+            val response = apiService.deleteFavoriteAuthor(authorId)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data ?: 0)
+            } else {
+                Result.failure(Exception(body?.msg ?: "取消关注失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 我的收藏夹列表
+     * @param musicId 后端要求必传且 > 0，用于标记 checked 字段
+     */
+    suspend fun getFavoriteDirectories(musicId: Long): Result<List<FavoriteDirectory>> {
+        return try {
+            val response = apiService.getFavoriteDirectory(musicId)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data ?: emptyList())
+            } else {
+                Result.failure(Exception(body?.msg ?: "获取收藏夹失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 创建收藏夹
+     */
+    suspend fun createFavoriteDirectory(name: String): Result<FavoriteDirectory?> {
+        return try {
+            val response = apiService.insertFavoriteDirectory(CreateFavoriteDirectoryRequest(name))
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data)
+            } else {
+                Result.failure(Exception(body?.msg ?: "创建收藏夹失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 删除收藏夹
+     */
+    suspend fun deleteFavoriteDirectory(directoryId: Long): Result<Int> {
+        return try {
+            val response = apiService.deleteFavoriteDirectory(directoryId)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data ?: 0)
+            } else {
+                Result.failure(Exception(body?.msg ?: "删除收藏夹失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }

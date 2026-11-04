@@ -5,6 +5,8 @@ import com.player.music.model.ApiResponse
 import com.player.music.model.Circle
 import com.player.music.model.CircleLike
 import com.player.music.model.Comment
+import com.player.music.model.CreateFavoriteDirectoryRequest
+import com.player.music.model.FavoriteDirectory
 import com.player.music.model.EmailLoginRequest
 import com.player.music.model.InsertCommentRequest
 import com.player.music.model.Music
@@ -126,6 +128,61 @@ interface ApiService {
      */
     @DELETE("/service/music/deleteMusicLike/{id}")
     suspend fun deleteMusicLike(@Path("id") id: Long): Response<ApiResponse<Int>>
+
+    /**
+     * 我喜欢的歌曲（分页）
+     */
+    @GET("/service/music/getMusicLike")
+    suspend fun getMusicLike(
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<ApiResponse<List<Music>>>
+
+    /**
+     * 播放记录（分页，含播放次数 times）
+     */
+    @GET("/service/music/getMusicRecord")
+    suspend fun getMusicRecord(
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<ApiResponse<List<Music>>>
+
+    /**
+     * 我关注的歌手（不分页）
+     */
+    @GET("/service/music/getFavoriteAuthor")
+    suspend fun getFavoriteAuthor(): Response<ApiResponse<List<MusicAuthor>>>
+
+    /**
+     * 取消关注歌手
+     */
+    @DELETE("/service/music/deleteFavoriteAuthor/{authorId}")
+    suspend fun deleteFavoriteAuthor(@Path("authorId") authorId: Long): Response<ApiResponse<Int>>
+
+    /**
+     * 收藏夹列表
+     * @param musicId 音乐ID（后端要求 > 0，用于标记 checked）
+     */
+    @GET("/service/music/getFavoriteDirectory")
+    suspend fun getFavoriteDirectory(
+        @Query("musicId") musicId: Long
+    ): Response<ApiResponse<List<FavoriteDirectory>>>
+
+    /**
+     * 创建收藏夹
+     */
+    @POST("/service/music/insertFavoriteDirectory")
+    suspend fun insertFavoriteDirectory(
+        @Body request: CreateFavoriteDirectoryRequest
+    ): Response<ApiResponse<FavoriteDirectory>>
+
+    /**
+     * 删除收藏夹
+     */
+    @DELETE("/service/music/deleteFavoriteDirectory/{directoryId}")
+    suspend fun deleteFavoriteDirectory(
+        @Path("directoryId") directoryId: Long
+    ): Response<ApiResponse<Int>>
 
     // ==================== 朋友圈 /service/circle ====================
 

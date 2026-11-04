@@ -76,6 +76,7 @@ fun MusicIndexPage(
     val homeListState = rememberLazyListState()
     val recommendListState = rememberLazyListState()
     val circleListState = rememberLazyListState()
+    val mineListState = rememberLazyListState()
 
     // 统一 Toast 提示
     LaunchedEffect(toastMessage) {
@@ -123,10 +124,10 @@ fun MusicIndexPage(
                     currentUsername = currentUser?.username,
                     currentUserAvatar = currentUser?.avatar
                 )
-                else -> MineTab(
-                    avatar = currentUser?.avatar,
-                    nickname = currentUser?.username ?: currentUser?.userAccount ?: "未登录",
-                    navController = navController
+                else -> MusicUserPage(
+                    navController = navController,
+                    currentUser = currentUser,
+                    listState = mineListState
                 )
             }
         }
@@ -236,52 +237,6 @@ private fun MiniPlayerButton(coverUrl: String?, onClick: () -> Unit) {
             coverUrl = coverUrl,
             size = Dimens.miniPlayerSize - 12.dp
         )
-    }
-}
-
-/**
- * 我的 Tab（占位）：展示用户头像与昵称，可进入已有的用户信息页面
- */
-@Composable
-private fun MineTab(
-    avatar: String?,
-    nickname: String,
-    navController: NavHostController
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.PageBackground),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Avatar(avatarUrl = avatar, size = AvatarSize.BIG)
-        Spacer(modifier = Modifier.height(Dimens.middleGap))
-        Text(
-            text = nickname,
-            color = Color.Black,
-            fontSize = Dimens.bigFontSize
-        )
-        Spacer(modifier = Modifier.height(Dimens.middleGap))
-        Text(
-            text = "我的 · 功能开发中",
-            color = Color.Secondary,
-            fontSize = Dimens.normalFontSize
-        )
-        Spacer(modifier = Modifier.height(Dimens.bigGap))
-        Button(
-            onClick = { navController.navigate(Screens.User.route) },
-            modifier = Modifier
-                .width(200.dp)
-                .height(Dimens.btnHeight),
-            shape = RoundedCornerShape(Dimens.btnHeight / 2),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Primary,
-                contentColor = Color.White
-            )
-        ) {
-            Text(text = "用户信息", fontSize = Dimens.normalFontSize)
-        }
     }
 }
 
