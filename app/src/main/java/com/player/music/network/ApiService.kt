@@ -2,11 +2,16 @@ package com.player.music.network
 
 import com.player.music.model.AccountLoginRequest
 import com.player.music.model.ApiResponse
+import com.player.music.model.Circle
+import com.player.music.model.CircleLike
+import com.player.music.model.Comment
 import com.player.music.model.EmailLoginRequest
+import com.player.music.model.InsertCommentRequest
 import com.player.music.model.Music
 import com.player.music.model.MusicAuthor
 import com.player.music.model.MusicCategory
 import com.player.music.model.ResetPasswordRequest
+import com.player.music.model.SaveLikeRequest
 import com.player.music.model.SendEmailRequest
 import com.player.music.model.UpdatePasswordRequest
 import com.player.music.model.User
@@ -121,4 +126,43 @@ interface ApiService {
      */
     @DELETE("/service/music/deleteMusicLike/{id}")
     suspend fun deleteMusicLike(@Path("id") id: Long): Response<ApiResponse<Int>>
+
+    // ==================== 朋友圈 /service/circle ====================
+
+    /**
+     * 分页查询朋友圈列表
+     * @param type 类型：MUSIC / MOVIE
+     */
+    @GET("/service/circle/getCircleListByType")
+    suspend fun getCircleListByType(
+        @Query("type") type: String,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<ApiResponse<List<Circle>>>
+
+    // ==================== 社交（评论/点赞） /service/social ====================
+
+    /**
+     * 新增评论 / 回复
+     * @param request content、parentId、topId、relationId、type
+     */
+    @POST("/service/social/insertComment")
+    suspend fun insertComment(@Body request: InsertCommentRequest): Response<ApiResponse<Comment>>
+
+    /**
+     * 点赞（朋友圈 type = MUSIC_CIRCLE）
+     */
+    @POST("/service/social/saveLike")
+    suspend fun saveLike(@Body request: SaveLikeRequest): Response<ApiResponse<CircleLike>>
+
+    /**
+     * 取消点赞
+     * @param relationId 关联ID（朋友圈ID）
+     * @param type 资源类型（MUSIC_CIRCLE）
+     */
+    @DELETE("/service/social/deleteLike")
+    suspend fun deleteLike(
+        @Query("relationId") relationId: Long,
+        @Query("type") type: String
+    ): Response<ApiResponse<Int>>
 }

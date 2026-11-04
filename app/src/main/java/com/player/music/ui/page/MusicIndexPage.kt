@@ -75,6 +75,7 @@ fun MusicIndexPage(
     // 列表滚动状态提升到这里，切换 Tab 后返回仍保留位置
     val homeListState = rememberLazyListState()
     val recommendListState = rememberLazyListState()
+    val circleListState = rememberLazyListState()
 
     // 统一 Toast 提示
     LaunchedEffect(toastMessage) {
@@ -116,9 +117,11 @@ fun MusicIndexPage(
                     listState = homeListState
                 )
                 1 -> MusicRecommendPage(listState = recommendListState)
-                2 -> PlaceholderTab(
-                    title = "音乐圈",
-                    iconRes = R.drawable.icon_music_circle
+                2 -> MusicCirclePage(
+                    listState = circleListState,
+                    currentUserId = currentUser?.id,
+                    currentUsername = currentUser?.username,
+                    currentUserAvatar = currentUser?.avatar
                 )
                 else -> MineTab(
                     avatar = currentUser?.avatar,
@@ -232,32 +235,6 @@ private fun MiniPlayerButton(coverUrl: String?, onClick: () -> Unit) {
         MusicCover(
             coverUrl = coverUrl,
             size = Dimens.miniPlayerSize - 12.dp
-        )
-    }
-}
-
-/**
- * 未开发 Tab 的占位页面
- */
-@Composable
-private fun PlaceholderTab(title: String, iconRes: Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.PageBackground),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(iconRes),
-            contentDescription = title,
-            modifier = Modifier.size(Dimens.bigIconSize)
-        )
-        Spacer(modifier = Modifier.height(Dimens.middleGap))
-        Text(
-            text = "$title · 功能开发中",
-            color = Color.Secondary,
-            fontSize = Dimens.normalFontSize
         )
     }
 }

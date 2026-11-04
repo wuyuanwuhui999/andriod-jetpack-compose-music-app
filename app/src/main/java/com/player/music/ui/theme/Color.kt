@@ -31,4 +31,12 @@ object Color {
     val DisableColor = ComposeColor(DISABLE_COLOR)
     val Secondary = ComposeColor(SUB_COLOR)
     val Transparent = ComposeColor(TRANSPARENT) // 添加透明颜色
+
+    // 音乐圈用户名 / 点赞人名称（与 Flutter 端 ThemeColors.blueColor 一致）
+    @ColorInt const val LINK_BLUE_COLOR = 0xFF3E7D9B.toInt()
+    val LinkBlue = ComposeColor(LINK_BLUE_COLOR)
+
+    // 弹层背景（与 Flutter 端 ThemeColors.subTitle 一致）
+    @ColorInt const val SUB_TITLE_COLOR = 0xFF999999.toInt()
+    val SubTitle = ComposeColor(SUB_TITLE_COLOR)
 }
