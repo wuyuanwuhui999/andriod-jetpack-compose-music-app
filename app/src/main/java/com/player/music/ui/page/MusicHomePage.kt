@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -180,6 +181,7 @@ private fun MusicSearchBar(
             .fillMaxWidth()
             // 左右外边距（白色区域不贴屏幕边缘，与页面其他卡片对齐）
             .padding(horizontal = Dimens.middleGap)
+            .clip(RoundedCornerShape(Dimens.moduleBorderRadius))
             .background(Color.White)
             // 内边距
             .padding(Dimens.middleGap),
