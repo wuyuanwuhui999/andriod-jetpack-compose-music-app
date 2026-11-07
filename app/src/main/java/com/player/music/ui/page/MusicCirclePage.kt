@@ -204,7 +204,7 @@ fun MusicCirclePage(
                 .align(Alignment.BottomEnd)
                 .padding(end = Dimens.middleGap, bottom = Dimens.middleGap)
                 .size(Dimens.middleAvatar)
-                .alpha(0.9f)
+                .alpha(0.5f)
                 .clickable { navController.navigate(Screens.MusicShare.route) }
         )
     }

@@ -192,9 +192,8 @@ fun MusicPlayerPage(
             LyricView(
                 lyrics = lyrics,
                 currentIndex = currentLyricIndex,
-                onLineClick = { line ->
-                    viewModel.seekTo(line.timeMs)
-                },
+                // 点击歌词进入全屏歌词页（歌词页内点击某句才跳转播放进度）
+                onLyricClick = { navController.navigate(Screens.MusicLyric.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -532,7 +531,7 @@ private fun RotatingDisc(coverUrl: String?, isPlaying: Boolean) {
 private fun LyricView(
     lyrics: List<LyricLine>,
     currentIndex: Int,
-    onLineClick: (LyricLine) -> Unit,
+    onLyricClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (lyrics.isEmpty()) {
@@ -574,7 +573,7 @@ private fun LyricView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = Dimens.smallGap)
-                    .clickable { onLineClick(line) }
+                    .clickable { onLyricClick() }
             )
         }
     }

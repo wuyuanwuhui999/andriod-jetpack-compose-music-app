@@ -43,6 +43,9 @@ object Dimens {
     val titleBarWidth = 3.dp
     val titleBarHeight = 16.dp
 
+    // 歌词页每行高度（用于估算一屏歌词行数，做居中滚动）
+    val lyricLineHeight = 56.dp
+
     // 空状态提示区块高度
     val emptyTipHeight = 60.dp
 
