@@ -41,6 +41,16 @@ sealed class Screens(val route: String) {
     /** 歌曲分类页（首页「分类歌曲」快捷入口） */
     object MusicCategory : Screens("music_category")
 
+    /** 分类歌曲列表页（首页分类模块点「更多」进入）：classifyId + classifyName 作为参数 */
+    object MusicClassifyList : Screens(
+        "music_classify?classifyId={classifyId}&classifyName={classifyName}"
+    ) {
+        fun createRoute(classifyId: Int, classifyName: String): String {
+            return "music_classify?classifyId=$classifyId" +
+                "&classifyName=${Uri.encode(classifyName)}"
+        }
+    }
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"

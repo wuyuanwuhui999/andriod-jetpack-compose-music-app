@@ -48,7 +48,7 @@ import com.player.music.R
 import com.player.music.model.Music
 import com.player.music.model.MusicCategory
 import com.player.music.navigation.Screens
-import com.player.music.ui.components.MusicCover
+import com.player.music.ui.components.SongListCard
 import com.player.music.ui.theme.Color
 import com.player.music.ui.theme.Dimens
 import com.player.music.viewmodel.MusicCategoryViewModel
@@ -69,7 +69,6 @@ fun MusicCategoryPage(
     val expanded by viewModel.expanded.collectAsState()
     val activeIndex by viewModel.activeIndex.collectAsState()
     val songs by viewModel.songs.collectAsState()
-    val total by viewModel.total.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val reachedEnd by viewModel.reachedEnd.collectAsState()
@@ -173,7 +172,6 @@ fun MusicCategoryPage(
                     item(key = "songs") {
                         SongListCard(
                             songs = songs,
-                            total = total,
                             isLoading = isLoading,
                             currentMusicId = currentMusic?.id,
                             onSongClick = { index ->
@@ -285,113 +283,6 @@ private fun CategoryGrid(
                         .size(Dimens.smallIconSize)
                         .rotate(if (expanded) 90f else 0f)
                 )
-            }
-        }
-    }
-}
-
-/**
- * 当前分类的歌曲列表：白色卡片 + 分割线
- */
-@Composable
-private fun SongListCard(
-    songs: List<Music>,
-    total: Int,
-    isLoading: Boolean,
-    currentMusicId: Long?,
-    onSongClick: (Int) -> Unit,
-    onLikeClick: (Music) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(Dimens.moduleBorderRadius))
-            .background(Color.White)
-            .padding(horizontal = Dimens.middleGap)
-    ) {
-        when {
-            isLoading && songs.isEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Dimens.bigGap),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(Dimens.middleIconSize),
-                        color = Color.Primary,
-                        strokeWidth = 2.dp
-                    )
-                }
-            }
-
-            songs.isEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Dimens.bigGap),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "该分类暂无歌曲",
-                        color = Color.Secondary,
-                        fontSize = Dimens.normalFontSize
-                    )
-                }
-            }
-
-            else -> {
-                songs.forEachIndexed { index, music ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSongClick(index) }
-                            .padding(vertical = Dimens.middleGap),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        MusicCover(coverUrl = music.cover, size = Dimens.middleAvatar)
-                        Spacer(modifier = Modifier.width(Dimens.middleGap))
-                        Text(
-                            text = listOfNotNull(
-                                music.authorName?.takeIf { it.isNotBlank() },
-                                music.songName?.takeIf { it.isNotBlank() }
-                            ).joinToString(" - "),
-                            color = if (currentMusicId == music.id) Color.Primary else Color.Black,
-                            fontSize = Dimens.normalFontSize,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(Dimens.middleGap))
-                        Image(
-                            painter = painterResource(
-                                if (currentMusicId == music.id) R.drawable.icon_music_playing_grey
-                                else R.drawable.icon_music_play
-                            ),
-                            contentDescription = "播放",
-                            modifier = Modifier.size(Dimens.listIconSize)
-                        )
-                        Spacer(modifier = Modifier.width(Dimens.middleGap))
-                        Image(
-                            painter = painterResource(
-                                if (music.isLike == 1) R.drawable.icon_like_active else R.drawable.icon_like
-                            ),
-                            contentDescription = if (music.isLike == 1) "取消点赞" else "点赞",
-                            modifier = Modifier
-                                .size(Dimens.listIconSize)
-                                .clickable { onLikeClick(music) }
-                        )
-                        Spacer(modifier = Modifier.width(Dimens.middleGap))
-                        Image(
-                            painter = painterResource(R.drawable.icon_music_menu),
-                            contentDescription = "更多操作",
-                            modifier = Modifier.size(Dimens.listIconSize)
-                        )
-                    }
-                    if (index != songs.lastIndex) {
-                        Divider(color = Color.PageBackground, thickness = Dimens.borderSize)
-                    }
-                }
             }
         }
     }

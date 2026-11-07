@@ -18,6 +18,7 @@ import com.player.music.ui.page.MusicPlayerPage
 import com.player.music.ui.page.MusicAuthorCategoryPage
 import com.player.music.ui.page.MusicAuthorPage
 import com.player.music.ui.page.MusicCategoryPage
+import com.player.music.ui.page.MusicClassifyListPage
 import com.player.music.ui.page.MusicLyricPage
 import com.player.music.ui.page.MusicPickPage
 import com.player.music.ui.page.MusicSearchPage
@@ -65,6 +66,15 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.MusicCategory.route) {
             MusicCategoryPage(navController = navController)
+        }
+        composable(
+            route = Screens.MusicClassifyList.route,
+            arguments = listOf(
+                navArgument("classifyId") { defaultValue = "0"; type = NavType.StringType },
+                navArgument("classifyName") { defaultValue = "分类歌曲"; type = NavType.StringType }
+            )
+        ) {
+            MusicClassifyListPage(navController = navController)
         }
         composable(
             route = Screens.MusicSearch.route,

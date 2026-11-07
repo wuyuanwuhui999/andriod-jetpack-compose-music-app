@@ -131,7 +131,12 @@ fun MusicHomePage(
                             if (category.displayName == "推荐歌手") {
                                 navController.navigate(Screens.MusicAuthorCategory.route)
                             } else {
-                                comingSoon(category.displayName)
+                                navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(
+                                        classifyId = category.id,
+                                        classifyName = category.displayName
+                                    )
+                                )
                             }
                         },
                         onMusicClick = { index, _ ->
