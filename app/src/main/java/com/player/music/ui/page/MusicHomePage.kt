@@ -113,10 +113,10 @@ fun MusicHomePage(
                 item(key = "quick_entry") {
                     QuickEntryCard(
                         onItemClick = { feature ->
-                            if (feature == "歌手") {
-                                navController.navigate(Screens.MusicAuthorCategory.route)
-                            } else {
-                                comingSoon(feature)
+                            when (feature) {
+                                "歌手" -> navController.navigate(Screens.MusicAuthorCategory.route)
+                                "分类歌曲" -> navController.navigate(Screens.MusicCategory.route)
+                                else -> comingSoon(feature)
                             }
                         }
                     )

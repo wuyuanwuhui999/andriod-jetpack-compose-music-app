@@ -17,6 +17,7 @@ import com.player.music.ui.page.UpdatePasswordPage
 import com.player.music.ui.page.MusicPlayerPage
 import com.player.music.ui.page.MusicAuthorCategoryPage
 import com.player.music.ui.page.MusicAuthorPage
+import com.player.music.ui.page.MusicCategoryPage
 import com.player.music.ui.page.MusicLyricPage
 import com.player.music.ui.page.MusicPickPage
 import com.player.music.ui.page.MusicSearchPage
@@ -61,6 +62,9 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.MusicAuthorCategory.route) {
             MusicAuthorCategoryPage(navController = navController)
+        }
+        composable(Screens.MusicCategory.route) {
+            MusicCategoryPage(navController = navController)
         }
         composable(
             route = Screens.MusicSearch.route,

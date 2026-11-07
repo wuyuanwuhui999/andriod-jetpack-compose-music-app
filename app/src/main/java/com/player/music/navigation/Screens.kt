@@ -38,6 +38,9 @@ sealed class Screens(val route: String) {
     /** AI 聊天页（首页搜索栏右侧 AI 图标进入） */
     object Chat : Screens("chat")
 
+    /** 歌曲分类页（首页「分类歌曲」快捷入口） */
+    object MusicCategory : Screens("music_category")
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"
