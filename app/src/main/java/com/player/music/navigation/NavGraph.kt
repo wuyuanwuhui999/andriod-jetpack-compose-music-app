@@ -23,6 +23,7 @@ import com.player.music.ui.page.MusicFavoriteListPage
 import com.player.music.ui.page.MusicLyricPage
 import com.player.music.ui.page.MusicPickPage
 import com.player.music.ui.page.MusicSearchPage
+import com.player.music.ui.page.RecordMusicPage
 import com.player.music.ui.page.MusicSharePage
 import com.player.music.ui.page.UserPage
 
@@ -67,6 +68,9 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.MusicCategory.route) {
             MusicCategoryPage(navController = navController)
+        }
+        composable(Screens.MusicRecord.route) {
+            RecordMusicPage(navController = navController)
         }
         composable(
             route = Screens.MusicFavoriteList.route,

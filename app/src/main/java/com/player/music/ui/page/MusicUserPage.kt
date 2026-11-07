@@ -403,7 +403,7 @@ fun MusicUserPage(
                     )
                     if (recordTotal > RECORD_MORE_THRESHOLD) {
                         Spacer(modifier = Modifier.width(Dimens.middleGap))
-                        MoreText { comingSoon("播放记录列表") }
+                        MoreText { navController.navigate(Screens.MusicRecord.route) }
                     }
                 }
 

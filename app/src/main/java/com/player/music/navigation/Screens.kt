@@ -69,6 +69,9 @@ sealed class Screens(val route: String) {
         }
     }
 
+    /** 播放记录页（我的页「播放记录」更多进入） */
+    object MusicRecord : Screens("music_record")
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"
