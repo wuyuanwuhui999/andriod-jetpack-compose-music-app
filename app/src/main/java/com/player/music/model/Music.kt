@@ -19,5 +19,7 @@ data class Music(
     @SerializedName("isHot") val isHot: Int? = null,
     @SerializedName("isLike") val isLike: Int = 0,
     /** 播放次数，仅播放记录接口返回 */
-    @SerializedName("times") val times: Int = 0
+    @SerializedName("times") val times: Int = 0,
+    /** 歌词（LRC 格式文本） */
+    @SerializedName("lyrics") val lyrics: String? = null
 )

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,7 +25,6 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -90,20 +90,36 @@ fun MusicIndexPage(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.PageBackground,
         bottomBar = {
-            MusicBottomBar(
-                currentIndex = currentIndex,
-                onTabSelected = { currentIndex = it }
-            )
-        },
-        floatingActionButton = {
-            MiniPlayerButton(
-                coverUrl = recommendMusic?.cover,
-                onClick = {
-                    Toast.makeText(context, "播放器功能开发中，敬请期待", Toast.LENGTH_SHORT).show()
+            Box(modifier = Modifier.fillMaxWidth()) {
+                MusicBottomBar(
+                    currentIndex = currentIndex,
+                    onTabSelected = { currentIndex = it }
+                )
+
+                val playerMusic by viewModel.player.currentMusic.collectAsState()
+                // 中间悬浮迷你播放器：中心点与底栏上边缘中心点重合
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .offset(y = -(Dimens.miniPlayerSize / 2))
+                ) {
+                    MiniPlayerButton(
+                        coverUrl = playerMusic?.cover ?: recommendMusic?.cover,
+                        onClick = {
+                            if (playerMusic != null) {
+                                navController.navigate(Screens.MusicPlayer.route)
+                            } else {
+                                // 还没选歌时：用首页推荐歌曲作为播放列表开始播放
+                                recommendMusic?.let {
+                                    viewModel.player.playList(listOf(it), 0)
+                                    navController.navigate(Screens.MusicPlayer.route)
+                                } ?: Toast.makeText(context, "暂无推荐歌曲", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    )
                 }
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center
+            }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -117,8 +133,12 @@ fun MusicIndexPage(
                     currentUserAvatar = currentUser?.avatar,
                     listState = homeListState
                 )
-                1 -> MusicRecommendPage(listState = recommendListState)
+                1 -> MusicRecommendPage(
+                    navController = navController,
+                    listState = recommendListState
+                )
                 2 -> MusicCirclePage(
+                    navController = navController,
                     listState = circleListState,
                     currentUserId = currentUser?.id,
                     currentUsername = currentUser?.username,

@@ -258,7 +258,10 @@ fun MusicUserPage(
                                     coverUrl = music.cover,
                                     title = music.songName,
                                     subtitle = music.authorName ?: "",
-                                    onPlayClick = { comingSoon("播放") }
+                                    onPlayClick = {
+                                        viewModel.playLikedMusic(index)
+                                        navController.navigate(Screens.MusicPlayer.route)
+                                    }
                                 )
                             }
                             if (index < likedSongs.size - 1) {
@@ -428,7 +431,10 @@ fun MusicUserPage(
                                     contentDescription = "播放",
                                     modifier = Modifier
                                         .size(Dimens.listIconSize)
-                                        .clickable { comingSoon("播放") }
+                                        .clickable {
+                                            viewModel.playRecord(index)
+                                            navController.navigate(Screens.MusicPlayer.route)
+                                        }
                                 )
                                 Spacer(modifier = Modifier.width(Dimens.middleGap * 2))
                                 Image(

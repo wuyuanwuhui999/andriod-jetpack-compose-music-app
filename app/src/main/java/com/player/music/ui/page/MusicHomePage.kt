@@ -44,6 +44,7 @@ import com.player.music.R
 import com.player.music.model.Music
 import com.player.music.model.MusicAuthor
 import com.player.music.model.MusicCategory
+import com.player.music.navigation.Screens
 import com.player.music.ui.components.Avatar
 import com.player.music.ui.components.AvatarSize
 import com.player.music.ui.components.MusicCover
@@ -109,7 +110,15 @@ fun MusicHomePage(
             ) {
                 // 歌手 / 分类歌曲 / 排行榜 / 经典老歌
                 item(key = "quick_entry") {
-                    QuickEntryCard(onItemClick = { comingSoon(it) })
+                    QuickEntryCard(
+                        onItemClick = { feature ->
+                            if (feature == "歌手") {
+                                navController.navigate(Screens.MusicAuthorCategory.route)
+                            } else {
+                                comingSoon(feature)
+                            }
+                        }
+                    )
                 }
 
                 // 分类歌曲模块
@@ -117,9 +126,30 @@ fun MusicHomePage(
                     MusicCategoryModule(
                         category = category,
                         viewModel = viewModel,
-                        onMoreClick = { comingSoon(category.displayName) },
-                        onMusicClick = { comingSoon("播放") },
-                        onAuthorClick = { comingSoon("歌手详情") }
+                        onMoreClick = {
+                            if (category.displayName == "推荐歌手") {
+                                navController.navigate(Screens.MusicAuthorCategory.route)
+                            } else {
+                                comingSoon(category.displayName)
+                            }
+                        },
+                        onMusicClick = { index, _ ->
+                            viewModel.playCategorySong(category.id, index)
+                            navController.navigate(Screens.MusicPlayer.route)
+                        },
+                        onAuthorClick = { author ->
+                            if (author.authorId <= 0) {
+                                comingSoon("歌手详情")
+                            } else {
+                                navController.navigate(
+                                    Screens.MusicAuthor.createRoute(
+                                        authorId = author.authorId,
+                                        authorName = author.authorName,
+                                        avatar = author.avatar
+                                    )
+                                )
+                            }
+                        }
                     )
                 }
 
@@ -263,7 +293,7 @@ private fun MusicCategoryModule(
     category: MusicCategory,
     viewModel: MusicIndexViewModel,
     onMoreClick: () -> Unit,
-    onMusicClick: (Music) -> Unit,
+    onMusicClick: (Int, Music) -> Unit,
     onAuthorClick: (MusicAuthor) -> Unit
 ) {
     val songsMap by viewModel.songsByCategory.collectAsState()
@@ -357,8 +387,8 @@ private fun MusicCategoryModule(
             }
             else -> {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    songs.forEach { music ->
-                        MusicRow(music = music, onClick = { onMusicClick(music) })
+                    songs.forEachIndexed { index, music ->
+                        MusicRow(music = music, onClick = { onMusicClick(index, music) })
                     }
                 }
             }
@@ -392,13 +422,15 @@ private fun MusicRow(music: Music, onClick: () -> Unit) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(
-                text = "${music.authorName ?: ""} - ${music.albumName ?: ""}",
-                color = Color.Secondary,
-                fontSize = Dimens.normalFontSize,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            music.authorName?.let {
+                Text(
+                    text = it,
+                    color = Color.Secondary,
+                    fontSize = Dimens.normalFontSize,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
 
         Image(

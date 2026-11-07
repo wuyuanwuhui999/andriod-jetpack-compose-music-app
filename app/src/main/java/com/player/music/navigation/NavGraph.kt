@@ -13,6 +13,10 @@ import com.player.music.ui.page.MusicIndexPage
 import com.player.music.ui.page.RegisterPage
 import com.player.music.ui.page.ResetPasswordPage
 import com.player.music.ui.page.UpdatePasswordPage
+import com.player.music.ui.page.MusicPlayerPage
+import com.player.music.ui.page.MusicAuthorCategoryPage
+import com.player.music.ui.page.MusicAuthorPage
+import com.player.music.ui.page.MusicSharePage
 import com.player.music.ui.page.UserPage
 
 /**
@@ -35,6 +39,30 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.User.route) {
             UserPage(navController = navController)
+        }
+        composable(Screens.MusicPlayer.route) {
+            MusicPlayerPage(navController = navController)
+        }
+        composable(Screens.MusicShare.route) {
+            MusicSharePage(navController = navController)
+        }
+        composable(Screens.MusicAuthorCategory.route) {
+            MusicAuthorCategoryPage(navController = navController)
+        }
+        composable(
+            route = Screens.MusicAuthor.route,
+            arguments = listOf(
+                navArgument("authorId") { defaultValue = 0L; type = NavType.LongType },
+                navArgument("authorName") { defaultValue = ""; type = NavType.StringType },
+                navArgument("avatar") { defaultValue = ""; type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            MusicAuthorPage(
+                navController = navController,
+                authorId = backStackEntry.arguments?.getLong("authorId") ?: 0L,
+                authorName = backStackEntry.arguments?.getString("authorName") ?: "",
+                avatar = backStackEntry.arguments?.getString("avatar") ?: ""
+            )
         }
         composable(Screens.UpdatePassword.route) {
             UpdatePasswordPage(navController = navController)

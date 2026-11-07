@@ -107,6 +107,16 @@ object CommonUtils {
      * @param path 服务端返回的相对路径，如 /static/music/images/x.jpg
      * @return 可直接加载的完整 URL，入参为空时返回 null
      */
+    /**
+     * 毫秒转 mm:ss，用于播放进度显示
+     */
+    fun formatDuration(millis: Int): String {
+        val totalSeconds = (millis.coerceAtLeast(0) / 1000)
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
     fun formatImageUrl(path: String?): String? {
         if (path.isNullOrBlank()) return null
         return if (path.startsWith("http")) path else Config.BASE_URL + path

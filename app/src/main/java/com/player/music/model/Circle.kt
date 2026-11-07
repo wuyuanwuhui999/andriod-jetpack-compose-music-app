@@ -25,6 +25,7 @@ data class Circle(
     @SerializedName("musicCover") val musicCover: String? = null,
     @SerializedName("musicPlayUrl") val musicPlayUrl: String? = null,
     @SerializedName("musicLocalPlayUrl") val musicLocalPlayUrl: String? = null,
+    @SerializedName("musicLyrics") val musicLyrics: String? = null,
     // 点赞与评论
     @SerializedName("circleLikes") val circleLikes: List<CircleLike>? = emptyList(),
     @SerializedName("circleComments") val circleComments: List<Comment>? = emptyList()

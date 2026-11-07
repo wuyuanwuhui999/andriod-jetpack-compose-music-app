@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.player.music.model.FavoriteDirectory
 import com.player.music.model.Music
 import com.player.music.model.MusicAuthor
+import com.player.music.player.MusicPlayerManager
 import com.player.music.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MusicUserViewModel @Inject constructor(
-    private val musicRepository: MusicRepository
+    private val musicRepository: MusicRepository,
+    val player: MusicPlayerManager
 ) : ViewModel() {
 
     companion object {
@@ -263,6 +265,20 @@ class MusicUserViewModel @Inject constructor(
                 _toastMessage.value = result.exceptionOrNull()?.message ?: "取消关注失败"
             }
         }
+    }
+
+    /** 播放"我喜欢的歌曲"第 index 首 */
+    fun playLikedMusic(index: Int) {
+        val list = _likedSongs.value
+        if (list.isEmpty()) return
+        player.playList(list, index.coerceIn(0, list.size - 1))
+    }
+
+    /** 播放"最近播放"第 index 首 */
+    fun playRecord(index: Int) {
+        val list = _records.value
+        if (list.isEmpty()) return
+        player.playList(list, index.coerceIn(0, list.size - 1))
     }
 
     fun clearToast() {

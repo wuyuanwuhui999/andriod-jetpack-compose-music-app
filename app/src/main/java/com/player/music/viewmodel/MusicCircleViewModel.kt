@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.player.music.model.Circle
 import com.player.music.model.CircleLike
 import com.player.music.model.Comment
+import com.player.music.model.Music
+import com.player.music.player.MusicPlayerManager
 import com.player.music.repository.CircleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +22,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MusicCircleViewModel @Inject constructor(
-    private val circleRepository: CircleRepository
+    private val circleRepository: CircleRepository,
+    private val player: MusicPlayerManager
 ) : ViewModel() {
 
     companion object {
@@ -245,6 +248,31 @@ class MusicCircleViewModel @Inject constructor(
         _circles.value = _circles.value.map { circle ->
             if (circle.id == circleId) transform(circle) else circle
         }
+    }
+
+    /**
+     * 播放音乐圈动态里关联的歌曲（点击歌曲播放按钮时）
+     * @return 是否成功开始播放（歌曲 id 或播放地址缺失时返回 false）
+     */
+    fun playCircleMusic(circle: Circle): Boolean {
+        val musicId = circle.musicAudioId ?: 0L
+        val playUrl = circle.musicLocalPlayUrl ?: circle.musicPlayUrl
+        if (musicId <= 0L || playUrl.isNullOrBlank()) {
+            _toastMessage.value = "该歌曲暂无可播放的地址"
+            return false
+        }
+        val music = Music(
+            id = musicId,
+            songName = circle.musicSongName,
+            authorName = circle.musicAuthorName,
+            albumName = circle.musicAlbumName,
+            cover = circle.musicCover,
+            playUrl = circle.musicPlayUrl,
+            localPlayUrl = circle.musicLocalPlayUrl,
+            lyrics = circle.musicLyrics
+        )
+        player.playList(listOf(music), 0)
+        return true
     }
 
     fun clearToast() {

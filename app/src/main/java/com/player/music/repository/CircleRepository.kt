@@ -5,6 +5,7 @@ import com.player.music.model.CircleLike
 import com.player.music.model.CircleListResult
 import com.player.music.model.Comment
 import com.player.music.model.InsertCommentRequest
+import com.player.music.model.InsertCircleRequest
 import com.player.music.model.SaveLikeRequest
 import com.player.music.network.ApiService
 import javax.inject.Inject
@@ -105,6 +106,38 @@ class CircleRepository @Inject constructor(
                 Result.success(body.data ?: 0)
             } else {
                 Result.failure(Exception(body?.msg ?: "取消点赞失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 发布朋友圈（把歌曲分享到音乐圈）
+     * @param musicId 关联音乐 id
+     * @param content 想法内容
+     * @param permission 0-私密，1-公开
+     */
+    suspend fun insertCircle(
+        musicId: Long,
+        content: String,
+        permission: Int = 1
+    ): Result<Long> {
+        return try {
+            val response = apiService.insertCircle(
+                InsertCircleRequest(
+                    content = content,
+                    imgs = "",
+                    relationId = musicId,
+                    type = "MUSIC",
+                    permission = permission
+                )
+            )
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(body.data ?: 0L)
+            } else {
+                Result.failure(Exception(body?.msg ?: "发布失败"))
             }
         } catch (e: Exception) {
             Result.failure(e)

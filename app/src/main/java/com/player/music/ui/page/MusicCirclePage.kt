@@ -48,9 +48,11 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.player.music.R
 import com.player.music.model.Circle
 import com.player.music.model.Comment
+import com.player.music.navigation.Screens
 import com.player.music.ui.components.Avatar
 import com.player.music.ui.components.AvatarSize
 import com.player.music.ui.components.MusicCover
@@ -66,6 +68,7 @@ import com.player.music.viewmodel.MusicCircleViewModel
  */
 @Composable
 fun MusicCirclePage(
+    navController: NavHostController,
     listState: LazyListState,
     currentUserId: String?,
     currentUsername: String?,
@@ -141,7 +144,9 @@ fun MusicCirclePage(
                         circle = circle,
                         onMenuClick = { menuCircle = circle },
                         onMusicClick = {
-                            Toast.makeText(context, "播放器功能开发中，敬请期待", Toast.LENGTH_SHORT).show()
+                            if (viewModel.playCircleMusic(circle)) {
+                                navController.navigate(Screens.MusicPlayer.route)
+                            }
                         },
                         onReplyClick = { topComment, clicked ->
                             commentCircle = circle

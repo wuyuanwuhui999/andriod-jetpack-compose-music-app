@@ -35,8 +35,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.player.music.R
 import com.player.music.model.Music
+import com.player.music.navigation.Screens
 import com.player.music.ui.components.MusicCover
 import com.player.music.ui.theme.Color
 import com.player.music.ui.theme.Dimens
@@ -49,6 +51,7 @@ import com.player.music.viewmodel.MusicRecommendViewModel
  */
 @Composable
 fun MusicRecommendPage(
+    navController: NavHostController,
     listState: LazyListState,
     viewModel: MusicRecommendViewModel = hiltViewModel()
 ) {
@@ -112,7 +115,8 @@ fun MusicRecommendPage(
                         index = index,
                         music = music,
                         onPlayClick = {
-                            Toast.makeText(context, "播放器功能开发中，敬请期待", Toast.LENGTH_SHORT).show()
+                            viewModel.play(index)
+                            navController.navigate(Screens.MusicPlayer.route)
                         },
                         onLikeClick = { viewModel.toggleLike(music) }
                     )

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.player.music.model.Music
 import com.player.music.model.MusicAuthor
 import com.player.music.model.MusicCategory
+import com.player.music.player.MusicPlayerManager
 import com.player.music.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MusicIndexViewModel @Inject constructor(
-    private val musicRepository: MusicRepository
+    private val musicRepository: MusicRepository,
+    val player: MusicPlayerManager
 ) : ViewModel() {
 
     companion object {
@@ -190,6 +192,15 @@ class MusicIndexViewModel @Inject constructor(
 
     /** 是否还有更多分类未展示 */
     fun hasMoreCategories(): Boolean = _visibleCount.value < _categories.value.size
+
+    /**
+     * 播放某个分类下的第 index 首歌曲（首页分类模块点击时调用）
+     */
+    fun playCategorySong(categoryId: Int, index: Int) {
+        val songs = _songsByCategory.value[categoryId].orEmpty()
+        if (songs.isEmpty()) return
+        player.playList(songs, index.coerceIn(0, songs.size - 1))
+    }
 
     fun clearToast() {
         _toastMessage.value = null

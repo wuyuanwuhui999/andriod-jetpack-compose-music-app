@@ -9,8 +9,11 @@ import com.player.music.model.CreateFavoriteDirectoryRequest
 import com.player.music.model.FavoriteDirectory
 import com.player.music.model.EmailLoginRequest
 import com.player.music.model.InsertCommentRequest
+import com.player.music.model.InsertCircleRequest
+import com.player.music.model.InsertMusicRecordRequest
 import com.player.music.model.Music
 import com.player.music.model.MusicAuthor
+import com.player.music.model.MusicAuthorCategory
 import com.player.music.model.MusicCategory
 import com.player.music.model.ResetPasswordRequest
 import com.player.music.model.SaveLikeRequest
@@ -116,11 +119,35 @@ interface ApiService {
     ): Response<ApiResponse<List<MusicAuthor>>>
 
     /**
+     * 歌手分类（华语 / 欧美 / 韩国 / 日本 ...）
+     */
+    @GET("/service/music/getMusicAuthorCategory")
+    suspend fun getMusicAuthorCategory(): Response<ApiResponse<List<MusicAuthorCategory>>>
+
+    /**
      * 点赞音乐
      * @param id 音乐ID
      */
     @POST("/service/music/insertMusicLike/{id}")
     suspend fun insertMusicLike(@Path("id") id: Long): Response<ApiResponse<Int>>
+
+    /**
+     * 按歌手取音乐（歌手详情页）
+     * @param authorId 歌手 authorId（注意不是主键 id）
+     */
+    @GET("/service/music/getMusicListByAuthorId")
+    suspend fun getMusicListByAuthorId(
+        @Query("authorId") authorId: Long,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<ApiResponse<List<Music>>>
+
+    /**
+     * 关注歌手
+     * @param authorId 歌手 authorId
+     */
+    @POST("/service/music/insertFavoriteAuthor/{authorId}")
+    suspend fun insertFavoriteAuthor(@Path("authorId") authorId: Long): Response<ApiResponse<Int>>
 
     /**
      * 取消点赞音乐
@@ -177,6 +204,40 @@ interface ApiService {
     ): Response<ApiResponse<FavoriteDirectory>>
 
     /**
+     * 一级评论列表（音乐评论）
+     */
+    @GET("/service/social/getTopCommentList")
+    suspend fun getTopCommentList(
+        @Query("relationId") relationId: Long,
+        @Query("type") type: String,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<ApiResponse<List<Comment>>>
+
+    /**
+     * 是否已收藏到收藏夹（data > 0 表示已收藏）
+     */
+    @GET("/service/music/isMusicFavorite/{musicId}")
+    suspend fun isMusicFavorite(@Path("musicId") musicId: Long): Response<ApiResponse<Int>>
+
+    /**
+     * 添加到收藏夹（先清空该音乐的所有收藏，再按 favoriteIds 批量插入）
+     */
+    @POST("/service/music/insertMusicFavorite/{musicId}")
+    suspend fun insertMusicFavorite(
+        @Path("musicId") musicId: Long,
+        @Body favoriteIds: List<Long>
+    ): Response<ApiResponse<Int>>
+
+    /**
+     * 插入播放记录
+     */
+    @POST("/service/music/insertMusicRecord")
+    suspend fun insertMusicRecord(
+        @Body request: InsertMusicRecordRequest
+    ): Response<ApiResponse<Long>>
+
+    /**
      * 删除收藏夹
      */
     @DELETE("/service/music/deleteFavoriteDirectory/{directoryId}")
@@ -196,6 +257,12 @@ interface ApiService {
         @Query("pageNum") pageNum: Int = 1,
         @Query("pageSize") pageSize: Int = 10
     ): Response<ApiResponse<List<Circle>>>
+
+    /**
+     * 发布朋友圈（分享歌曲到音乐圈）
+     */
+    @POST("/service/circle/insertCircle")
+    suspend fun insertCircle(@Body request: InsertCircleRequest): Response<ApiResponse<Long>>
 
     // ==================== 社交（评论/点赞） /service/social ====================
 

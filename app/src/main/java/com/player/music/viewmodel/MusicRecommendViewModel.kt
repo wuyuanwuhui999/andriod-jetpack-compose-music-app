@@ -3,6 +3,7 @@ package com.player.music.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.player.music.model.Music
+import com.player.music.player.MusicPlayerManager
 import com.player.music.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MusicRecommendViewModel @Inject constructor(
-    private val musicRepository: MusicRepository
+    private val musicRepository: MusicRepository,
+    val player: MusicPlayerManager
 ) : ViewModel() {
 
     companion object {
@@ -174,6 +176,13 @@ class MusicRecommendViewModel @Inject constructor(
         _musicList.value = _musicList.value.map { item ->
             if (item.id == musicId) item.copy(isLike = isLike) else item
         }
+    }
+
+    /**
+     * 播放列表第 index 首（点击歌曲行时调用）
+     */
+    fun play(index: Int) {
+        player.playList(_musicList.value, index)
     }
 
     fun clearToast() {
