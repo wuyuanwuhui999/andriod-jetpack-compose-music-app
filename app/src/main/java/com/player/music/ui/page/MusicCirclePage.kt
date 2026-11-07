@@ -33,8 +33,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -60,6 +62,8 @@ import com.player.music.ui.theme.Color
 import com.player.music.ui.theme.Dimens
 import com.player.music.utils.CommonUtils
 import com.player.music.viewmodel.MusicCircleViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * 音乐圈（音乐圈 Tab）
@@ -91,6 +95,29 @@ fun MusicCirclePage(
     var replyComment by remember { mutableStateOf<Comment?>(null) }
     var inputText by remember { mutableStateOf("") }
 
+    // 发布分享后回到本页时刷新列表（分享页把标记写在 music_index 路由上）
+    val circleEntry = navController.currentBackStackEntry
+    LaunchedEffect(circleEntry) {
+        val refreshFlow = circleEntry?.savedStateHandle
+            ?.getStateFlow(CIRCLE_REFRESH_KEY, false)
+            ?: return@LaunchedEffect
+        refreshFlow.collect { needRefresh ->
+            if (!needRefresh) return@collect
+            // 先消费标记（这里在 collect 内部置位，不会像 LaunchedEffect(needRefresh) 那样
+            // 因为 key 变化把自己取消掉）
+            circleEntry.savedStateHandle[CIRCLE_REFRESH_KEY] = false
+            val previousTopId = viewModel.circles.value.firstOrNull()?.id
+            viewModel.loadInitialData()
+            // 等第一页数据回来后回到顶部：LazyColumn 会按 key 锚定原来的位置，
+            // 新动态插在列表最前面时不会自动滚上去
+            withTimeoutOrNull(3_000) {
+                snapshotFlow { viewModel.circles.value.firstOrNull()?.id }
+                    .first { it != previousTopId }
+            }
+            runCatching { listState.scrollToItem(0) }
+        }
+    }
+
     LaunchedEffect(toastMessage) {
         toastMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -98,74 +125,88 @@ fun MusicCirclePage(
         }
     }
 
-    when {
-        isLoading && circles.isEmpty() -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.PageBackground),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Color.Primary)
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            isLoading && circles.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.PageBackground),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.Primary)
+                }
             }
-        }
 
-        circles.isEmpty() -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.PageBackground),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "暂无音乐圈动态",
-                    color = Color.Secondary,
-                    fontSize = Dimens.normalFontSize
-                )
+            circles.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.PageBackground),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "暂无音乐圈动态",
+                        color = Color.Secondary,
+                        fontSize = Dimens.normalFontSize
+                    )
+                }
             }
-        }
 
-        else -> {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.PageBackground),
-                contentPadding = PaddingValues(
-                    start = Dimens.middleGap,
-                    end = Dimens.middleGap,
-                    top = Dimens.middleGap,
-                    bottom = Dimens.miniPlayerSize + Dimens.middleGap
-                ),
-                verticalArrangement = Arrangement.spacedBy(Dimens.middleGap)
-            ) {
-                items(circles, key = { it.id }) { circle ->
-                    CircleItem(
-                        circle = circle,
-                        onMenuClick = { menuCircle = circle },
-                        onMusicClick = {
-                            if (viewModel.playCircleMusic(circle)) {
-                                navController.navigate(Screens.MusicPlayer.route)
+            else -> {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.PageBackground),
+                    contentPadding = PaddingValues(
+                        start = Dimens.middleGap,
+                        end = Dimens.middleGap,
+                        top = Dimens.middleGap,
+                        bottom = Dimens.miniPlayerSize + Dimens.middleGap
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.middleGap)
+                ) {
+                    items(circles, key = { it.id }) { circle ->
+                        CircleItem(
+                            circle = circle,
+                            onMenuClick = { menuCircle = circle },
+                            onMusicClick = {
+                                if (viewModel.playCircleMusic(circle)) {
+                                    navController.navigate(Screens.MusicPlayer.route)
+                                }
+                            },
+                            onReplyClick = { topComment, clicked ->
+                                commentCircle = circle
+                                replyTopComment = topComment
+                                replyComment = clicked
+                                inputText = ""
                             }
-                        },
-                        onReplyClick = { topComment, clicked ->
-                            commentCircle = circle
-                            replyTopComment = topComment
-                            replyComment = clicked
-                            inputText = ""
-                        }
-                    )
-                }
+                        )
+                    }
 
-                item(key = "load_more") {
-                    CircleLoadMoreFooter(
-                        isLoadingMore = isLoadingMore,
-                        reachedEnd = reachedEnd,
-                        onLoadMore = { viewModel.loadMore() }
-                    )
+                    item(key = "load_more") {
+                        CircleLoadMoreFooter(
+                            isLoadingMore = isLoadingMore,
+                            reachedEnd = reachedEnd,
+                            onLoadMore = { viewModel.loadMore() }
+                        )
+                    }
                 }
             }
         }
+
+        // 右下角悬浮发布按钮（对应 uni-app 端 MusicCircleComponent 的 icon_music_add）
+        Image(
+            painter = painterResource(R.drawable.icon_music_add),
+            contentDescription = "发布音乐圈动态",
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = Dimens.middleGap, bottom = Dimens.middleGap)
+                .size(Dimens.middleAvatar)
+                .alpha(0.9f)
+                .clickable { navController.navigate(Screens.MusicShare.route) }
+        )
     }
 
     // 点赞 / 评论 菜单

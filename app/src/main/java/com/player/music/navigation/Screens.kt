@@ -29,6 +29,9 @@ sealed class Screens(val route: String) {
         }
     }
 
+    /** 选择音乐页（分享到音乐圈时挑一首歌） */
+    object MusicPick : Screens("music_pick")
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"

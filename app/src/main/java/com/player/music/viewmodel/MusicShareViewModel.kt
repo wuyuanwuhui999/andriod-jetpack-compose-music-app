@@ -2,6 +2,7 @@ package com.player.music.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.player.music.model.Music
 import com.player.music.player.MusicPlayerManager
 import com.player.music.repository.CircleRepository
@@ -13,8 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * 分享页 ViewModel
- * 对应 Flutter 端 MusicSharePage：把当前播放的歌曲发布到音乐圈
+ * 分享到音乐圈 ViewModel
+ * 对应 Flutter 端 MusicSharePage.dart + uni-app 端 MusicSharePage.vue：
+ * 输入这一刻的想法、选择要分享的歌曲（默认带上当前播放歌曲，可去「选择音乐」页换一首）、
+ * 选择谁可以看（公开/私密）、发布到音乐圈
  */
 @HiltViewModel
 class MusicShareViewModel @Inject constructor(
@@ -22,8 +25,11 @@ class MusicShareViewModel @Inject constructor(
     val player: MusicPlayerManager
 ) : ViewModel() {
 
-    /** 要分享的歌曲（当前播放歌曲） */
-    val currentMusic: StateFlow<Music?> = player.currentMusic
+    private val gson = Gson()
+
+    /** 要分享的歌曲：默认当前播放歌曲，可在选择音乐页换一首 */
+    private val _selectedMusic = MutableStateFlow<Music?>(null)
+    val selectedMusic: StateFlow<Music?> = _selectedMusic.asStateFlow()
 
     /** 这一刻的想法 */
     private val _content = MutableStateFlow("")
@@ -39,6 +45,11 @@ class MusicShareViewModel @Inject constructor(
     private val _toastMessage = MutableStateFlow<String?>(null)
     val toastMessage: StateFlow<String?> = _toastMessage.asStateFlow()
 
+    init {
+        // 与 Flutter 端一致：进页面默认带上当前播放的歌曲
+        _selectedMusic.value = player.currentMusic.value
+    }
+
     fun updateContent(value: String) {
         _content.value = value
     }
@@ -47,18 +58,23 @@ class MusicShareViewModel @Inject constructor(
         _permission.value = value
     }
 
+    /** 选择音乐页选中的歌曲（通过路由返回的 JSON 回填） */
+    fun selectMusicFromJson(json: String?) {
+        if (json.isNullOrBlank()) return
+        runCatching { gson.fromJson(json, Music::class.java) }
+            .getOrNull()
+            ?.let { _selectedMusic.value = it }
+    }
+
     /**
      * 发布到音乐圈
+     * 与参考实现一致：内容可以为空，只发歌曲；但必须有一首歌
      */
     fun publish(onSuccess: () -> Unit) {
         if (_publishing.value) return
-        val music = currentMusic.value
+        val music = _selectedMusic.value
         if (music == null) {
-            _toastMessage.value = "没有可分享的歌曲"
-            return
-        }
-        if (_content.value.isBlank()) {
-            _toastMessage.value = "说点什么吧"
+            _toastMessage.value = "请选择要分享的歌曲"
             return
         }
         _publishing.value = true
