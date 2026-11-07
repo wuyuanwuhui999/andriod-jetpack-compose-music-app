@@ -51,6 +51,24 @@ sealed class Screens(val route: String) {
         }
     }
 
+    /** 我的收藏夹歌曲列表页（我的页点收藏夹进入）：directoryId + directoryName + cover + total */
+    object MusicFavoriteList : Screens(
+        "music_favorite?directoryId={directoryId}&directoryName={directoryName}" +
+            "&cover={cover}&total={total}"
+    ) {
+        fun createRoute(
+            directoryId: Long,
+            directoryName: String,
+            cover: String?,
+            total: Int
+        ): String {
+            return "music_favorite?directoryId=$directoryId" +
+                "&directoryName=${Uri.encode(directoryName)}" +
+                "&cover=${Uri.encode(cover ?: "")}" +
+                "&total=$total"
+        }
+    }
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"

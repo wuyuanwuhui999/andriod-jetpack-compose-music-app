@@ -237,6 +237,17 @@ interface ApiService {
     suspend fun isMusicFavorite(@Path("musicId") musicId: Long): Response<ApiResponse<Int>>
 
     /**
+     * 收藏夹里的歌曲列表（分页）
+     * @param favoriteId 收藏夹ID
+     */
+    @GET("/service/music/getMusicListByFavoriteId")
+    suspend fun getMusicListByFavoriteId(
+        @Query("favoriteId") favoriteId: Long,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<ApiResponse<List<Music>>> // getMusicListByFavoriteId
+
+    /**
      * 添加到收藏夹（先清空该音乐的所有收藏，再按 favoriteIds 批量插入）
      */
     @POST("/service/music/insertMusicFavorite/{musicId}")

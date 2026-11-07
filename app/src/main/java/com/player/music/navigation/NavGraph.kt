@@ -19,6 +19,7 @@ import com.player.music.ui.page.MusicAuthorCategoryPage
 import com.player.music.ui.page.MusicAuthorPage
 import com.player.music.ui.page.MusicCategoryPage
 import com.player.music.ui.page.MusicClassifyListPage
+import com.player.music.ui.page.MusicFavoriteListPage
 import com.player.music.ui.page.MusicLyricPage
 import com.player.music.ui.page.MusicPickPage
 import com.player.music.ui.page.MusicSearchPage
@@ -66,6 +67,17 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.MusicCategory.route) {
             MusicCategoryPage(navController = navController)
+        }
+        composable(
+            route = Screens.MusicFavoriteList.route,
+            arguments = listOf(
+                navArgument("directoryId") { defaultValue = "0"; type = NavType.StringType },
+                navArgument("directoryName") { defaultValue = ""; type = NavType.StringType },
+                navArgument("cover") { defaultValue = ""; type = NavType.StringType },
+                navArgument("total") { defaultValue = "0"; type = NavType.StringType }
+            )
+        ) {
+            MusicFavoriteListPage(navController = navController)
         }
         composable(
             route = Screens.MusicClassifyList.route,

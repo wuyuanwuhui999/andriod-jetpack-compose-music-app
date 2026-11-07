@@ -171,6 +171,16 @@ fun MusicUserPage(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
+                                        .clickable {
+                                            navController.navigate(
+                                                Screens.MusicFavoriteList.createRoute(
+                                                    directoryId = directory.id,
+                                                    directoryName = directory.name,
+                                                    cover = directory.cover,
+                                                    total = directory.total
+                                                )
+                                            )
+                                        }
                                         .padding(vertical = Dimens.middleGap),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -200,7 +210,17 @@ fun MusicUserPage(
                                         contentDescription = "播放",
                                         modifier = Modifier
                                             .size(Dimens.listIconSize)
-                                            .clickable { comingSoon("收藏夹播放") }
+                                            .clickable {
+                                                // 与 Flutter 端一致：收藏夹行的播放图标也是进入收藏夹详情页
+                                                navController.navigate(
+                                                    Screens.MusicFavoriteList.createRoute(
+                                                        directoryId = directory.id,
+                                                        directoryName = directory.name,
+                                                        cover = directory.cover,
+                                                        total = directory.total
+                                                    )
+                                                )
+                                            }
                                     )
                                     Spacer(modifier = Modifier.width(Dimens.middleGap * 2))
                                     Image(

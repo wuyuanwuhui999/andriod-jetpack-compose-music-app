@@ -134,6 +134,33 @@ class MusicRepository @Inject constructor(
     }
 
     /**
+     * 收藏夹里的歌曲列表（分页）
+     * @param favoriteId 收藏夹ID
+     */
+    suspend fun getMusicPageByFavoriteId(
+        favoriteId: Long,
+        pageNum: Int = 1,
+        pageSize: Int = 20
+    ): Result<MusicListResult> {
+        return try {
+            val response = apiService.getMusicListByFavoriteId(favoriteId, pageNum, pageSize)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(
+                    MusicListResult(
+                        list = body.data ?: emptyList(),
+                        total = body.total ?: 0
+                    )
+                )
+            } else {
+                Result.failure(Exception(body?.msg ?: "获取收藏夹歌曲失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
      * 点赞音乐
      * @param musicId 音乐ID
      * @return 影响行数，>0 表示成功
