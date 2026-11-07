@@ -178,8 +178,11 @@ private fun MusicSearchBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            // 左右外边距（白色区域不贴屏幕边缘，与页面其他卡片对齐）
+            .padding(horizontal = Dimens.middleGap)
             .background(Color.White)
-            .padding(horizontal = Dimens.middleGap, vertical = Dimens.middleGap),
+            // 内边距
+            .padding(Dimens.middleGap),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Avatar(
