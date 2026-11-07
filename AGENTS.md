@@ -128,7 +128,19 @@ Compose Page ──collectAsState()──> ViewModel StateFlow ──viewModelSc
 - 网关地址：`Config.BASE_URL`（默认 `http://192.168.5.62:4000`，**随局域网变化**，改这里只改本地，不提交）。
 - 模块：`/service/music/*`、`/service/social/*`（评论/点赞）、`/service/circle/*`（音乐圈）、`/service/user/*`（登录/用户）、`/service/chat/*`（AI）。
 - 鉴权：除 `getModelList` 等少数接口外，都要 `Authorization: Bearer <token>`。`network/NetworkInterceptor.kt` 会从 `DataStoreManager` 自动补这个头；项目里**没有全局 401 拦截**，token 失效表现为接口错误，由各页面自己提示。
-- 已封装的接口全在 `network/ApiService.kt`（约 40 个），改接口只动这一个文件 + 对应 Repository。
+- 已封装的接口全在 `network/ApiService.kt`（约 40 个），改接口只动这一个文件 + 对应 Repository。常用几个：
+
+  | 场景 | 接口 |
+  | --- | --- |
+  | 首页分类 / 分类歌曲 | `GET /service/music/getMusicCategory`、`getMusicListByCategoryId` |
+  | 榜单 / 推荐 | `GET /service/music/getKeywordMusic` |
+  | 歌手 / 歌手分类 | `GET /service/music/getMusicAuthorCategory`、`getMusicAuthorListByCategoryId`、`getMusicListByAuthorId` |
+  | 搜索 | `GET /service/music/searchMusic?keyword=&pageNum=&pageSize=` |
+  | 点赞 / 收藏夹 | `POST insertMusicLike` / `DELETE deleteMusicLike`、`getFavoriteDirectory`、`insertFavoriteDirectory`、`insertMusicFavorite`、`isMusicFavorite` |
+  | 收藏夹里的歌 / 播放记录 | `GET getMusicListByFavoriteId?favoriteId=`、`GET getMusicRecord`、`POST insertMusicRecord` |
+  | 音乐圈 | `GET /service/circle/getCircleListByType?type=MUSIC`、`POST insertCircle`；评论/点赞走 `/service/social/*` |
+  | 用户 | `POST /service/user/login`、`loginByEmail`、`register`、`updateUser`、`updateAvater`、`updatePassword`、`sendEmailVertifyCode` |
+  | AI | `GET /service/chat/getModelList?companyId=`、`GET getChatHistory`、WS `/service/chat/ws/chat` |
 - 分页参数统一 `pageNum`（从 1 开始）/ `pageSize`；返回 `ApiResponse<T>{ data, total, status, msg, token }`。
 - **AI 聊天走 WebSocket**：`ws://<host>/service/chat/ws/chat?token=Bearer%20<jwt>`（token 必须带 `Bearer ` 前缀并 URL 编码）。首帧发 JSON：
   `{ modelId, chatId, prompt, showThink, language, companyId, type }`（`companyId` 后端必填，取 `ChatConfig.COMPANY_ID`）。
