@@ -29,6 +29,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +42,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -97,6 +101,7 @@ fun MusicIndexPage(
                 )
 
                 val playerMusic by viewModel.player.currentMusic.collectAsState()
+                val isPlaying by viewModel.player.isPlaying.collectAsState()
                 // 中间悬浮迷你播放器：中心点与底栏上边缘中心点重合
                 Box(
                     modifier = Modifier
@@ -105,6 +110,8 @@ fun MusicIndexPage(
                 ) {
                     MiniPlayerButton(
                         coverUrl = playerMusic?.cover ?: recommendMusic?.cover,
+                        // 有歌曲且正在播放时旋转，暂停即停住
+                        isPlaying = playerMusic != null && isPlaying,
                         onClick = {
                             if (playerMusic != null) {
                                 navController.navigate(Screens.MusicPlayer.route)
@@ -241,10 +248,26 @@ private fun BottomBarItem(
 }
 
 /**
- * 中间悬浮的迷你播放器（当前仅展示推荐歌曲封面，播放器开发后接入）
+ * 中间悬浮的迷你播放器：封面在播放时匀速旋转，暂停时停在当前角度
+ * （旋转实现与播放页 RotatingDisc 一致：Animatable + LaunchedEffect(isPlaying)，
+ *   暂停即取消动画协程，恢复播放从当前角度继续，不会跳回 0 度）
  */
 @Composable
-private fun MiniPlayerButton(coverUrl: String?, onClick: () -> Unit) {
+private fun MiniPlayerButton(coverUrl: String?, isPlaying: Boolean, onClick: () -> Unit) {
+    val angle = remember { Animatable(0f) }
+
+    LaunchedEffect(isPlaying) {
+        if (isPlaying) {
+            while (true) {
+                angle.animateTo(
+                    targetValue = angle.value + 360f,
+                    animationSpec = tween(durationMillis = 8000, easing = LinearEasing)
+                )
+                angle.snapTo(angle.value - 360f)
+            }
+        }
+    }
+
     FloatingActionButton(
         onClick = onClick,
         modifier = Modifier.size(Dimens.miniPlayerSize),
@@ -255,7 +278,8 @@ private fun MiniPlayerButton(coverUrl: String?, onClick: () -> Unit) {
     ) {
         MusicCover(
             coverUrl = coverUrl,
-            size = Dimens.miniPlayerSize - 12.dp
+            size = Dimens.miniPlayerSize - 12.dp,
+            modifier = Modifier.rotate(angle.value)
         )
     }
 }
