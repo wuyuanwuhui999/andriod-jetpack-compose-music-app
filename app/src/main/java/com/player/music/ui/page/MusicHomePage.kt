@@ -178,6 +178,7 @@ private fun MusicSearchBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.White)
             .padding(horizontal = Dimens.middleGap, vertical = Dimens.middleGap),
         verticalAlignment = Alignment.CenterVertically
     ) {

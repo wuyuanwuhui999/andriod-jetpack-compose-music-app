@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -27,7 +28,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,6 +68,21 @@ fun MusicAuthorCategoryPage(
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val reachedEnd by viewModel.reachedEnd.collectAsState()
     val toastMessage by viewModel.toastMessage.collectAsState()
+
+    val listState = rememberLazyListState()
+
+    // 列表滚动到底部（最后一项进入可见区域）时自动加载下一页，等价于 Flutter 的 EasyRefresh onLoad
+    val isAtBottom by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            layoutInfo.totalItemsCount > 0 && lastVisible >= layoutInfo.totalItemsCount - 2
+        }
+    }
+
+    LaunchedEffect(isAtBottom, authors.size) {
+        if (isAtBottom) viewModel.loadMore()
+    }
 
     LaunchedEffect(toastMessage) {
         toastMessage?.let {
@@ -130,6 +148,7 @@ fun MusicAuthorCategoryPage(
 
             else -> {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(Dimens.middleGap),
                     verticalArrangement = Arrangement.spacedBy(Dimens.middleGap)
@@ -324,7 +343,7 @@ private fun AuthorRow(
             MusicCover(
                 coverUrl = author.avatar,
                 size = Dimens.middleAvatar,
-                name = author.authorName?.take(1) ?: ""
+                fallbackRes = R.drawable.default_avater
             )
 
             Spacer(modifier = Modifier.width(Dimens.middleGap))
@@ -380,7 +399,8 @@ private fun AuthorRow(
 }
 
 /**
- * 列表底部：进入可见区域自动加载下一页（相当于 Flutter 的上拉加载），到底后展示"已经到底了"
+ * 列表底部状态提示：加载中 / 上拉加载更多 / 已经到底了
+ * （实际的加载触发由页面级的滚动位置监听完成，这里点击可手动重试）
  */
 @Composable
 private fun AuthorLoadMoreFooter(
@@ -388,10 +408,6 @@ private fun AuthorLoadMoreFooter(
     reachedEnd: Boolean,
     onLoadMore: () -> Unit
 ) {
-    LaunchedEffect(reachedEnd) {
-        if (!reachedEnd) onLoadMore()
-    }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()

@@ -1,5 +1,6 @@
 package com.player.music.ui.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,14 +24,16 @@ import com.player.music.utils.CommonUtils
  * 音乐封面 / 歌手头像组件（圆形，与 Flutter 端 MusicAvaterComponent 一致）
  * @param coverUrl 服务端返回的封面地址（相对路径或完整 http 地址）
  * @param size 直径
- * @param name 无封面时展示的占位文字（如歌手名首字），为空时展示默认封面图
+ * @param name 无封面时展示的占位文字（如歌手名首字），为空时展示默认图
+ * @param fallbackRes 加载失败 / 无图时的默认图，歌手上传用 default_avater
  */
 @Composable
 fun MusicCover(
     coverUrl: String?,
     size: Dp,
     modifier: Modifier = Modifier,
-    name: String = ""
+    name: String = "",
+    @DrawableRes fallbackRes: Int = R.drawable.default_cover
 ) {
     val fullUrl = CommonUtils.formatImageUrl(coverUrl)
 
@@ -42,8 +45,8 @@ fun MusicCover(
                 .size(size)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.default_cover),
-            error = painterResource(R.drawable.default_cover)
+            placeholder = painterResource(fallbackRes),
+            error = painterResource(fallbackRes)
         )
     } else if (name.isNotBlank()) {
         // 没有图片但有名称：灰底 + 名称首字
@@ -62,7 +65,7 @@ fun MusicCover(
         }
     } else {
         Image(
-            painter = painterResource(R.drawable.default_cover),
+            painter = painterResource(fallbackRes),
             contentDescription = "默认封面",
             modifier = modifier
                 .size(size)
