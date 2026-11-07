@@ -53,10 +53,10 @@ fun UserPage(
 
     val context = LocalContext.current
 
-    // 编辑对话框状态
-    var showEditDialog by remember { mutableStateOf(false) }
-    var editField by remember { mutableStateOf<EditField?>(null) }
-    var editValue by remember { mutableStateOf("") }
+    // 从编辑页返回时重新读取本地缓存的用户信息，避免编辑后页面仍显示旧值
+    LaunchedEffect(Unit) {
+        mainViewModel.refreshUserData()
+    }
 
     // 日期选择器状态
     var showDatePicker by remember { mutableStateOf(false) }
@@ -189,9 +189,14 @@ fun UserPage(
                             value = currentUser?.username ?: "",
                             isRequired = true,
                             onClick = {
-                                editField = EditField.NICKNAME
-                                editValue = currentUser?.username ?: ""
-                                showEditDialog = true
+                                navController.navigate(
+                                    Screens.Edit.createRoute(
+                                        title = "编辑昵称",
+                                        field = "username",
+                                        value = currentUser?.username ?: "",
+                                        allowEmpty = false
+                                    )
+                                )
                             }
                         )
 
@@ -203,9 +208,14 @@ fun UserPage(
                             value = currentUser?.telephone ?: "",
                             isRequired = false,
                             onClick = {
-                                editField = EditField.PHONE
-                                editValue = currentUser?.telephone ?: ""
-                                showEditDialog = true
+                                navController.navigate(
+                                    Screens.Edit.createRoute(
+                                        title = "编辑电话",
+                                        field = "telephone",
+                                        value = currentUser?.telephone ?: "",
+                                        allowEmpty = true
+                                    )
+                                )
                             }
                         )
 
@@ -217,9 +227,14 @@ fun UserPage(
                             value = currentUser?.email ?: "",
                             isRequired = true,
                             onClick = {
-                                editField = EditField.EMAIL
-                                editValue = currentUser?.email ?: ""
-                                showEditDialog = true
+                                navController.navigate(
+                                    Screens.Edit.createRoute(
+                                        title = "编辑邮箱",
+                                        field = "email",
+                                        value = currentUser?.email ?: "",
+                                        allowEmpty = false
+                                    )
+                                )
                             }
                         )
 
@@ -313,9 +328,14 @@ fun UserPage(
                             value = currentUser?.region ?: "",
                             isRequired = false,
                             onClick = {
-                                editField = EditField.REGION
-                                editValue = currentUser?.region ?: ""
-                                showEditDialog = true
+                                navController.navigate(
+                                    Screens.Edit.createRoute(
+                                        title = "编辑地区",
+                                        field = "region",
+                                        value = currentUser?.region ?: "",
+                                        allowEmpty = true
+                                    )
+                                )
                             }
                         )
 
@@ -327,9 +347,14 @@ fun UserPage(
                             value = currentUser?.sign ?: "",
                             isRequired = false,
                             onClick = {
-                                editField = EditField.SIGN
-                                editValue = currentUser?.sign ?: ""
-                                showEditDialog = true
+                                navController.navigate(
+                                    Screens.Edit.createRoute(
+                                        title = "编辑个性签名",
+                                        field = "sign",
+                                        value = currentUser?.sign ?: "",
+                                        allowEmpty = true
+                                    )
+                                )
                             }
                         )
 
@@ -384,63 +409,6 @@ fun UserPage(
 
 
         }
-    }
-
-    // 编辑对话框
-    if (showEditDialog && editField != null) {
-        InputDialog(
-            title = when (editField) {
-                EditField.NICKNAME -> "编辑昵称"
-                EditField.PHONE -> "编辑电话"
-                EditField.EMAIL -> "编辑邮箱"
-                EditField.REGION -> "编辑地区"
-                EditField.SIGN -> "编辑个性签名"
-                else -> ""
-            },
-            initialValue = editValue,
-            hint = when (editField) {
-                EditField.NICKNAME -> "请输入昵称"
-                EditField.PHONE -> "请输入电话号码"
-                EditField.EMAIL -> "请输入邮箱地址"
-                EditField.REGION -> "请输入地区"
-                EditField.SIGN -> "请输入个性签名"
-                else -> ""
-            },
-            isRequired = editField == EditField.NICKNAME || editField == EditField.EMAIL,
-            keyboardType = when (editField) {
-                EditField.PHONE -> KeyboardType.Phone
-                EditField.EMAIL -> KeyboardType.Email
-                else -> KeyboardType.Text
-            },
-            validator = when (editField) {
-                EditField.PHONE -> { value ->
-                    value.isBlank() || android.util.Patterns.PHONE.matcher(value).matches()
-                }
-                EditField.EMAIL -> { value ->
-                    value.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(value).matches()
-                }
-                else -> null
-            },
-            onConfirm = { newValue ->
-                val updatedUser = when (editField) {
-                    EditField.NICKNAME -> currentUser?.copy(username = newValue)
-                    EditField.PHONE -> currentUser?.copy(telephone = newValue)
-                    EditField.EMAIL -> currentUser?.copy(email = newValue)
-                    EditField.REGION -> currentUser?.copy(region = newValue)
-                    EditField.SIGN -> currentUser?.copy(sign = newValue)
-                    else -> null
-                }
-                updatedUser?.let {
-                    userViewModel.updateUserInfo(it)
-                }
-                showEditDialog = false
-                editField = null
-            },
-            onDismiss = {
-                showEditDialog = false
-                editField = null
-            }
-        )
     }
 
     // 日期选择器
@@ -560,12 +528,6 @@ fun EditableInfoRow(
     }
 }
 
-/**
- * 编辑字段枚举
- */
-enum class EditField {
-    NICKNAME, PHONE, EMAIL, REGION, SIGN
-}
 
 /**
  * 从URI创建临时文件

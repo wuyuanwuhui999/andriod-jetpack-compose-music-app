@@ -80,6 +80,8 @@ class UserViewModel @Inject constructor(
             try {
                 val result = userRepository.updateUser(user)
                 if (result.isSuccess) {
+                    // 同步落到本地缓存，其他地方（如用户信息页）返回时可读到最新数据
+                    runCatching { dataStoreManager.saveUser(user) }
                     _updateResult.value = UpdateResult.Success("用户信息更新成功")
                 } else {
                     _updateResult.value = UpdateResult.Error(result.exceptionOrNull()?.message ?: "用户信息更新失败")

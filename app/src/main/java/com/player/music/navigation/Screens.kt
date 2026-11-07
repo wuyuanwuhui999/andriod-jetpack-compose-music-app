@@ -72,6 +72,23 @@ sealed class Screens(val route: String) {
     /** 播放记录页（我的页「播放记录」更多进入） */
     object MusicRecord : Screens("music_record")
 
+    /** 通用编辑页（用户信息页各字段进入）：title / field / value / allowEmpty */
+    object Edit : Screens(
+        "edit?title={title}&field={field}&value={value}&allowEmpty={allowEmpty}"
+    ) {
+        fun createRoute(
+            title: String,
+            field: String,
+            value: String,
+            allowEmpty: Boolean
+        ): String {
+            return "edit?title=${Uri.encode(title)}" +
+                "&field=$field" +
+                "&value=${Uri.encode(value)}" +
+                "&allowEmpty=$allowEmpty"
+        }
+    }
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"

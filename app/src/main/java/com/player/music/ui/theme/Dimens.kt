@@ -35,6 +35,10 @@ object Dimens {
     val textareaHeight = 200.dp
     val bottomBarHeight = 70.dp
 
+    // 小按钮（如顶部「保存」）宽度与圆角
+    val btnWidth = 72.dp
+    val minBtnRadius = 5.dp
+
     // 首页列表图标 / 迷你播放器
     val listIconSize = 20.dp
     val miniPlayerSize = 76.dp

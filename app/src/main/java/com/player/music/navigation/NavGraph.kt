@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.player.music.ui.page.ForgetPasswordPage
 import com.player.music.ui.page.ChatPage
+import com.player.music.ui.page.EditPage
 import com.player.music.ui.page.LaunchPage
 import com.player.music.ui.page.LoginPage
 import com.player.music.ui.page.MusicIndexPage
@@ -71,6 +72,23 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.MusicRecord.route) {
             RecordMusicPage(navController = navController)
+        }
+        composable(
+            route = Screens.Edit.route,
+            arguments = listOf(
+                navArgument("title") { defaultValue = ""; type = NavType.StringType },
+                navArgument("field") { defaultValue = ""; type = NavType.StringType },
+                navArgument("value") { defaultValue = ""; type = NavType.StringType },
+                navArgument("allowEmpty") { defaultValue = "true"; type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            EditPage(
+                navController = navController,
+                title = backStackEntry.arguments?.getString("title") ?: "",
+                field = backStackEntry.arguments?.getString("field") ?: "",
+                initialValue = backStackEntry.arguments?.getString("value") ?: "",
+                allowEmpty = backStackEntry.arguments?.getString("allowEmpty") != "false"
+            )
         }
         composable(
             route = Screens.MusicFavoriteList.route,

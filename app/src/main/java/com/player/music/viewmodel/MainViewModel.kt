@@ -37,6 +37,13 @@ class MainViewModel @Inject constructor(
         loadUserData()
     }
 
+    /**
+     * 重新从本地缓存读取用户信息（编辑页保存后返回时调用，保证页面显示最新数据）
+     */
+    fun refreshUserData() {
+        loadUserData()
+    }
+
     private fun loadUserData() {
         viewModelScope.launch {
             _isLoading.value = true
