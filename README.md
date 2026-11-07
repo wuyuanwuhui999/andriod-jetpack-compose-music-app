@@ -131,7 +131,7 @@ github地址：https://github.com/wuyuanwuhui99/flutter-music-app-ui
 gitee地址：https://gitee.com/wuyuanwuhui99/flutter-music-app-ui
 
 android jetpack compose 音乐项目（本项目）:  
-github地址：https://github.com/wuyuanwuhui999/sandriod-jetpack-compose-music-app  
+github地址：https://github.com/wuyuanwuhui999/andriod-jetpack-compose-music-app  
 gitee地址：https://gitee.com/wuyuanwuhui99/andriod-jetpack-compose-music-app
 
 android jetpack compose 聊天项目参见:  
