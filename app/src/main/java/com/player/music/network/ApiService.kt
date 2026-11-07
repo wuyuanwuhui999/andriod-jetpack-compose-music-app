@@ -1,7 +1,9 @@
 package com.player.music.network
 
 import com.player.music.model.AccountLoginRequest
+import com.player.music.model.AiModel
 import com.player.music.model.ApiResponse
+import com.player.music.model.ChatHistoryItem
 import com.player.music.model.Circle
 import com.player.music.model.CircleLike
 import com.player.music.model.Comment
@@ -303,4 +305,24 @@ interface ApiService {
         @Query("relationId") relationId: Long,
         @Query("type") type: String
     ): Response<ApiResponse<Int>>
+
+    // ==================== AI 聊天 /service/chat ====================
+
+    /**
+     * 可用模型列表
+     * @param companyId 企业ID（后端必传）
+     */
+    @GET("/service/chat/getModelList")
+    suspend fun getAiModelList(
+        @Query("companyId") companyId: String
+    ): Response<ApiResponse<List<AiModel>>>
+
+    /**
+     * 聊天历史（分页，按时间倒序）
+     */
+    @GET("/service/chat/getChatHistory")
+    suspend fun getChatHistory(
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<ApiResponse<List<ChatHistoryItem>>>
 }

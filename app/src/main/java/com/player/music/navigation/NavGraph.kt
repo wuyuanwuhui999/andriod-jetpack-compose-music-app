@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.player.music.ui.page.ForgetPasswordPage
+import com.player.music.ui.page.ChatPage
 import com.player.music.ui.page.LaunchPage
 import com.player.music.ui.page.LoginPage
 import com.player.music.ui.page.MusicIndexPage
@@ -48,6 +49,9 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.MusicLyric.route) {
             MusicLyricPage(navController = navController)
+        }
+        composable(Screens.Chat.route) {
+            ChatPage(navController = navController)
         }
         composable(Screens.MusicShare.route) {
             MusicSharePage(navController = navController)

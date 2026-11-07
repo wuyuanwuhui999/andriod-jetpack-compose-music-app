@@ -7,6 +7,7 @@ import com.player.music.local.DataStoreManager
 import com.player.music.network.ApiService
 import com.player.music.network.NetworkInterceptor
 import com.player.music.repository.CircleRepository
+import com.player.music.repository.ChatRepository
 import com.player.music.repository.MusicRepository
 import com.player.music.repository.UserRepository
 import dagger.Module
@@ -80,6 +81,12 @@ object AppModule {
     @Singleton
     fun provideCircleRepository(apiService: ApiService): CircleRepository {
         return CircleRepository(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(apiService: ApiService, okHttpClient: OkHttpClient): ChatRepository {
+        return ChatRepository(apiService, okHttpClient)
     }
 
     @Provides

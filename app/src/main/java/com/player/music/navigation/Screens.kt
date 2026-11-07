@@ -35,6 +35,9 @@ sealed class Screens(val route: String) {
     /** 歌词页（播放页点击歌词进入） */
     object MusicLyric : Screens("music_lyric")
 
+    /** AI 聊天页（首页搜索栏右侧 AI 图标进入） */
+    object Chat : Screens("chat")
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"
