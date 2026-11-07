@@ -85,7 +85,7 @@ fun MusicHomePage(
         MusicSearchBar(
             avatar = currentUserAvatar,
             keyword = keyword,
-            onSearchClick = { comingSoon("搜索") },
+            onSearchClick = { navController.navigate(Screens.MusicSearch.createRoute(keyword)) },
             onAiClick = { comingSoon("AI 聊天") }
         )
 

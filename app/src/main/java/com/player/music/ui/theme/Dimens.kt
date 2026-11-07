@@ -39,6 +39,13 @@ object Dimens {
     val listIconSize = 20.dp
     val miniPlayerSize = 76.dp
 
+    // 模块标题左侧竖线（对应 Flutter 端 TitleComponent 的 3px 左边框）
+    val titleBarWidth = 3.dp
+    val titleBarHeight = 16.dp
+
+    // 空状态提示区块高度
+    val emptyTipHeight = 60.dp
+
     // Font Sizes
     val normalFontSize = 14.sp
     val bigFontSize = 20.sp

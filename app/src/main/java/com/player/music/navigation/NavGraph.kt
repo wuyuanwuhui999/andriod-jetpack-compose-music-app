@@ -16,6 +16,7 @@ import com.player.music.ui.page.UpdatePasswordPage
 import com.player.music.ui.page.MusicPlayerPage
 import com.player.music.ui.page.MusicAuthorCategoryPage
 import com.player.music.ui.page.MusicAuthorPage
+import com.player.music.ui.page.MusicSearchPage
 import com.player.music.ui.page.MusicSharePage
 import com.player.music.ui.page.UserPage
 
@@ -48,6 +49,17 @@ fun AppNavGraph(navController: NavHostController) {
         }
         composable(Screens.MusicAuthorCategory.route) {
             MusicAuthorCategoryPage(navController = navController)
+        }
+        composable(
+            route = Screens.MusicSearch.route,
+            arguments = listOf(
+                navArgument("keyword") { defaultValue = ""; type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            MusicSearchPage(
+                navController = navController,
+                initialKeyword = backStackEntry.arguments?.getString("keyword") ?: ""
+            )
         }
         composable(
             route = Screens.MusicAuthor.route,

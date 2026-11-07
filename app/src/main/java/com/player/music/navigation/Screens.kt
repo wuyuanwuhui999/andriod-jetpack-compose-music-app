@@ -22,6 +22,13 @@ sealed class Screens(val route: String) {
     /** 歌手分类页（首页「歌手」快捷入口） */
     object MusicAuthorCategory : Screens("music_author_category")
 
+    /** 搜索页：keyword 为首页搜索栏带入的推荐关键词（仅作输入框提示） */
+    object MusicSearch : Screens("music_search?keyword={keyword}") {
+        fun createRoute(keyword: String): String {
+            return "music_search?keyword=${Uri.encode(keyword)}"
+        }
+    }
+
     /** 歌手详情页：authorId / authorName / avatar 作为参数传递 */
     object MusicAuthor : Screens(
         "music_author?authorId={authorId}&authorName={authorName}&avatar={avatar}"

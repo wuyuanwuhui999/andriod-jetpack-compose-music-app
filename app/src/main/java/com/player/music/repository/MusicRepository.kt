@@ -82,6 +82,32 @@ class MusicRepository @Inject constructor(
     }
 
     /**
+     * 搜索音乐（歌名 / 歌手 / 专辑 模糊匹配），同时返回总条数
+     */
+    suspend fun searchMusic(
+        keyword: String,
+        pageNum: Int = 1,
+        pageSize: Int = 20
+    ): Result<MusicListResult> {
+        return try {
+            val response = apiService.searchMusic(keyword, pageNum, pageSize)
+            val body = response.body()
+            if (response.isSuccessful && body?.status == "SUCCESS") {
+                Result.success(
+                    MusicListResult(
+                        list = body.data ?: emptyList(),
+                        total = body.total ?: 0
+                    )
+                )
+            } else {
+                Result.failure(Exception(body?.msg ?: "搜索音乐失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
      * 按分类分页获取音乐列表（同时返回总条数，供推荐页判断是否还有更多）
      */
     suspend fun getMusicPageByCategoryId(

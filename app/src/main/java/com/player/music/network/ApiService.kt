@@ -95,6 +95,20 @@ interface ApiService {
     suspend fun getMusicCategory(): Response<ApiResponse<List<MusicCategory>>>
 
     /**
+     * 搜索音乐（歌名 / 歌手 / 专辑 模糊匹配）
+     * 注意：keyword 由 Retrofit 自动 URL 编码，CJK 关键词直接传原字符串
+     * @param keyword 搜索关键词
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     */
+    @GET("/service/music/searchMusic")
+    suspend fun searchMusic(
+        @Query("keyword") keyword: String,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 20
+    ): Response<ApiResponse<List<Music>>>
+
+    /**
      * 按分类取音乐列表
      * @param categoryId 分类ID
      * @param pageNum 页码
