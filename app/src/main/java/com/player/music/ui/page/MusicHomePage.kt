@@ -116,6 +116,13 @@ fun MusicHomePage(
                             when (feature) {
                                 "歌手" -> navController.navigate(Screens.MusicAuthorCategory.route)
                                 "分类歌曲" -> navController.navigate(Screens.MusicCategory.route)
+                                // 经典老歌：直接进分类歌曲列表页，分类 id = 2
+                                "经典老歌" -> navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(
+                                        classifyId = 2,
+                                        classifyName = "经典老歌"
+                                    )
+                                )
                                 else -> comingSoon(feature)
                             }
                         }
