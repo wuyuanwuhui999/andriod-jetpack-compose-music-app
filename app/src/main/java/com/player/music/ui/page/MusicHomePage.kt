@@ -109,7 +109,7 @@ fun MusicHomePage(
                 ),
                 verticalArrangement = Arrangement.spacedBy(Dimens.middleGap)
             ) {
-                // 歌手 / 分类歌曲 / 排行榜 / 经典老歌
+                // 歌手 / 分类歌曲 / 热门歌曲 / 经典老歌
                 item(key = "quick_entry") {
                     QuickEntryCard(
                         onItemClick = { feature ->
@@ -123,11 +123,11 @@ fun MusicHomePage(
                                         classifyName = "经典老歌"
                                     )
                                 )
-                                // 排行榜：分类 id = 1
-                                "排行榜" -> navController.navigate(
+                                // 热门歌曲（原「排行榜」）：分类 id = 1
+                                "热门歌曲" -> navController.navigate(
                                     Screens.MusicClassifyList.createRoute(
                                         classifyId = 1,
-                                        classifyName = "排行榜"
+                                        classifyName = "热门歌曲"
                                     )
                                 )
                                 else -> comingSoon(feature)
@@ -248,7 +248,7 @@ private fun MusicSearchBar(
 }
 
 /**
- * 四个快捷入口：歌手 / 分类歌曲 / 排行榜 / 经典老歌
+ * 四个快捷入口：歌手 / 分类歌曲 / 热门歌曲 / 经典老歌
  */
 @Composable
 private fun QuickEntryCard(onItemClick: (String) -> Unit) {
@@ -271,9 +271,9 @@ private fun QuickEntryCard(onItemClick: (String) -> Unit) {
             )
             QuickEntryItem(
                 iconRes = R.drawable.icon_music_rank,
-                title = "排行榜",
+                title = "热门歌曲",
                 modifier = Modifier.weight(1f),
-                onClick = { onItemClick("排行榜") }
+                onClick = { onItemClick("热门歌曲") }
             )
             QuickEntryItem(
                 iconRes = R.drawable.icon_music_classics,

@@ -122,7 +122,7 @@ fun MusicCategoryPage(
                     .clickable { navController.popBackStack() }
             )
             Text(
-                text = "歌曲分类",
+                text = "分类歌曲",
                 color = Color.Black,
                 fontSize = Dimens.bigFontSize,
                 fontWeight = FontWeight.Bold,
