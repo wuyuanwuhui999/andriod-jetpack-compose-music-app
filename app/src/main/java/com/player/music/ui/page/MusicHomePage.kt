@@ -123,6 +123,13 @@ fun MusicHomePage(
                                         classifyName = "经典老歌"
                                     )
                                 )
+                                // 排行榜：分类 id = 1
+                                "排行榜" -> navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(
+                                        classifyId = 1,
+                                        classifyName = "排行榜"
+                                    )
+                                )
                                 else -> comingSoon(feature)
                             }
                         }
