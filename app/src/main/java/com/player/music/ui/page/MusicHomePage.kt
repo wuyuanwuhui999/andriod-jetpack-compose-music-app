@@ -1,6 +1,7 @@
 package com.player.music.ui.page
 
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -114,21 +115,28 @@ fun MusicHomePage(
                     QuickEntryCard(
                         onItemClick = { feature ->
                             when (feature) {
+                                // 歌手分类页
                                 "歌手" -> navController.navigate(Screens.MusicAuthorCategory.route)
+                                // 歌曲分类页（分类网格 + 该分类歌曲）
                                 "分类歌曲" -> navController.navigate(Screens.MusicCategory.route)
-                                // 经典老歌：直接进分类歌曲列表页，分类 id = 2
-                                "经典老歌" -> navController.navigate(
-                                    Screens.MusicClassifyList.createRoute(
-                                        classifyId = 2,
-                                        classifyName = "经典老歌"
-                                    )
-                                )
-                                // 热门歌曲（原「排行榜」）：分类 id = 1
+                                // 以下五个是「分类歌曲列表页」入口，参数为分类 id + 分类名称
                                 "热门歌曲" -> navController.navigate(
-                                    Screens.MusicClassifyList.createRoute(
-                                        classifyId = 1,
-                                        classifyName = "热门歌曲"
-                                    )
+                                    Screens.MusicClassifyList.createRoute(1, "热门歌曲")
+                                )
+                                "经典老歌" -> navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(2, "经典老歌")
+                                )
+                                "蝰蛇母带" -> navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(3, "蝰蛇母带")
+                                )
+                                "专属好歌" -> navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(4, "专属好歌")
+                                )
+                                "音乐记忆" -> navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(5, "音乐记忆")
+                                )
+                                "流行热歌" -> navController.navigate(
+                                    Screens.MusicClassifyList.createRoute(6, "流行热歌")
                                 )
                                 else -> comingSoon(feature)
                             }
@@ -248,39 +256,51 @@ private fun MusicSearchBar(
 }
 
 /**
- * 四个快捷入口：歌手 / 分类歌曲 / 热门歌曲 / 经典老歌
+ * 快捷入口数据：两行四列
+ * 第一行：歌手 / 分类歌曲 / 经典老歌 / 热门歌曲
+ * 第二行：蝰蛇母带 / 专属好歌 / 音乐记忆 / 流行热歌
+ */
+private data class QuickEntry(
+    val title: String,
+    @DrawableRes val iconRes: Int
+)
+
+private val quickEntries = listOf(
+    QuickEntry("歌手", R.drawable.icon_music_singer),
+    QuickEntry("分类歌曲", R.drawable.icon_music_classify),
+    QuickEntry("经典老歌", R.drawable.icon_music_classics),
+    QuickEntry("热门歌曲", R.drawable.icon_music_rank),
+    QuickEntry("蝰蛇母带", R.drawable.icon_kuisheyinxiao),
+    QuickEntry("专属好歌", R.drawable.icon_zhuanshuhaoge),
+    QuickEntry("音乐记忆", R.drawable.icon_yinyuejiyi),
+    QuickEntry("流行热歌", R.drawable.icon_liuxingrege)
+)
+
+/**
+ * 八个快捷入口：每行 4 个的两行网格
  */
 @Composable
 private fun QuickEntryCard(onItemClick: (String) -> Unit) {
     HomeCard {
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(Dimens.bigGap)
         ) {
-            QuickEntryItem(
-                iconRes = R.drawable.icon_music_singer,
-                title = "歌手",
-                modifier = Modifier.weight(1f),
-                onClick = { onItemClick("歌手") }
-            )
-            QuickEntryItem(
-                iconRes = R.drawable.icon_music_classify,
-                title = "分类歌曲",
-                modifier = Modifier.weight(1f),
-                onClick = { onItemClick("分类歌曲") }
-            )
-            QuickEntryItem(
-                iconRes = R.drawable.icon_music_rank,
-                title = "热门歌曲",
-                modifier = Modifier.weight(1f),
-                onClick = { onItemClick("热门歌曲") }
-            )
-            QuickEntryItem(
-                iconRes = R.drawable.icon_music_classics,
-                title = "经典老歌",
-                modifier = Modifier.weight(1f),
-                onClick = { onItemClick("经典老歌") }
-            )
+            quickEntries.chunked(4).forEach { rowEntries ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    rowEntries.forEach { entry ->
+                        QuickEntryItem(
+                            iconRes = entry.iconRes,
+                            title = entry.title,
+                            modifier = Modifier.weight(1f),
+                            onClick = { onItemClick(entry.title) }
+                        )
+                    }
+                }
+            }
         }
     }
 }
