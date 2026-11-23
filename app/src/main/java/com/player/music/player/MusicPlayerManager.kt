@@ -11,6 +11,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +29,12 @@ import kotlin.random.Random
  */
 @Singleton
 class MusicPlayerManager @Inject constructor() {
+
+    companion object {
+        /** 单曲循环回绕判定：上一帧位于最后 1.5 秒、当前帧位于最前 1.5 秒，视为开始新的一轮 */
+        private const val LOOP_END_THRESHOLD_MS = 1500
+        private const val LOOP_START_THRESHOLD_MS = 1500
+    }
 
     private var mediaPlayer: MediaPlayer? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -62,6 +69,18 @@ class MusicPlayerManager @Inject constructor() {
     /** 错误提示（页面收集后 Toast） */
     val messages = _messages.asSharedFlow()
 
+    private val _playRoundEvents = MutableSharedFlow<Music>(extraBufferCapacity = 8)
+    /**
+     * 播放轮次事件：每完整播完一遍就发一次
+     * - 单曲循环下 MediaPlayer 用 isLooping 内部循环，不会回调 onCompletionListener，
+     *   所以由 ticker 检测「播放位置从尾部跳回开头」来判定又播完一遍；
+     * - 播放页监听它上报播放记录，实现「单曲循环每播一次上报一次」。
+     */
+    val playRoundEvents: SharedFlow<Music> = _playRoundEvents.asSharedFlow()
+
+    /** ticker 上一次采样到的播放位置（毫秒），用于识别单曲循环的回绕 */
+    private var lastTickerPositionMs = 0
+
     /**
      * 播放一批歌曲（列表页点击某一首时调用）
      * @param list 播放列表
@@ -85,6 +104,7 @@ class MusicPlayerManager @Inject constructor() {
         _currentMusic.value = music
         _positionMs.value = 0
         _durationMs.value = 0
+        lastTickerPositionMs = 0
 
         val url = CommonUtils.formatImageUrl(music.localPlayUrl)
             ?: CommonUtils.formatImageUrl(music.playUrl)
@@ -250,6 +270,7 @@ class MusicPlayerManager @Inject constructor() {
      */
     fun setLoopMode(mode: LoopMode) {
         _loopMode.value = mode
+        lastTickerPositionMs = 0
         mediaPlayer?.isLooping = mode == LoopMode.REPEAT
     }
 
@@ -280,9 +301,20 @@ class MusicPlayerManager @Inject constructor() {
                 mediaPlayer?.let { player ->
                     try {
                         if (player.isPlaying) {
-                            _positionMs.value = player.currentPosition
+                            val position = player.currentPosition
                             val duration = player.duration
                             if (duration > 0) _durationMs.value = duration
+                            val totalMs = if (duration > 0) duration else _durationMs.value
+                            // 单曲循环：位置从尾部跳回开头 = 又播完一遍 → 上报一次播放记录
+                            if (_loopMode.value == LoopMode.REPEAT &&
+                                totalMs > LOOP_END_THRESHOLD_MS + LOOP_START_THRESHOLD_MS &&
+                                lastTickerPositionMs >= totalMs - LOOP_END_THRESHOLD_MS &&
+                                position <= LOOP_START_THRESHOLD_MS
+                            ) {
+                                _currentMusic.value?.let { _playRoundEvents.tryEmit(it) }
+                            }
+                            lastTickerPositionMs = position
+                            _positionMs.value = position
                         }
                     } catch (_: Exception) {
                         // 播放器已释放，忽略

@@ -70,6 +70,13 @@ class MusicPlayerViewModel @Inject constructor(
                 musicRepository.insertMusicRecord(music.id)
             }
         }
+        // 单曲循环：每完整播完一遍上报一次播放记录
+        // （同一首歌循环时 currentMusic 不变，上面对它 collect 收不到，所以用播放轮次事件补上）
+        viewModelScope.launch {
+            player.playRoundEvents.collect { music ->
+                musicRepository.insertMusicRecord(music.id)
+            }
+        }
         // 播放器错误提示
         viewModelScope.launch {
             player.messages.collect { _toastMessage.value = it }
